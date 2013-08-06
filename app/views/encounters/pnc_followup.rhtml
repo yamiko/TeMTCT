@@ -1,0 +1,210 @@
+<style type="text/css">
+	.tt_controls_last_art_drugs_taken .keyboard { display:none; }
+
+
+  .summary {
+    margin:20px;
+    font-size:1.6em;
+  }
+  .title, .recommendation {
+    margin-right:10px;
+    font-weight:bold;
+  }
+  .recommendation {
+    font-style:italic;
+  }
+  .warning {
+    color:red;
+  }
+
+  .pills_remaing{
+    left:25px;
+    position:inherit;
+  }
+
+  #char { display:none; }
+
+  #notes{background-color:red;}
+
+  .tt_controls_clinical_notes_optional #space { display:inline; }
+</style>
+
+<script>
+  var tt_cancel_destination = "/patients/show/<%= @patient.patient_id %>"
+	
+  function getNumberOfSymptoms(){
+    var options = $('symptoms').options
+    var symptoms = 0;
+
+    <% @side_effects = concept_set('MALAWI ART DRUG INDUCED SYMPTOM SET') %>
+    var myArray = "<%= @side_effects.to_a %>";
+
+    for (var i=0; i < options.length; i++) {
+      if (options[i].selected && options[i].value != "") {
+       if (myArray.indexOf(options[i].value) != -1) {
+        symptoms =  symptoms + 1;
+       }
+      }
+    }
+
+	options = $('additional_symptoms').options;
+
+    for (var i=0; i < options.length; i++) {
+      if (options[i].selected && options[i].value != "") {
+       if (myArray.indexOf(options[i].value) != -1) {
+        symptoms =  symptoms + 1;
+       }
+      }
+    }
+
+    return symptoms;
+  }
+
+  function getSelectedSymptoms() {
+    var options = $('symptoms').options;
+    var symptoms = new Array();
+
+    <% @side_effects = concept_set('MALAWI ART DRUG INDUCED SYMPTOM SET') %>
+    var myArray = "<%= @side_effects.to_a %>";
+	
+	var x = -1;
+	var css = "even";
+    for (var i=0; i < options.length; i++) {
+		if (options[i].selected && options[i].value != "") {
+			if (myArray.indexOf(options[i].value) != -1) {
+				x = x + 1;
+        		symptoms +=  '<li id="' + x + '" class="' + css + '" onclick="null; updateTouchscreenInputForSelect(__$(\'optionValue\' + this.id));" onmousedown="" tag="odd" tstvalue="' + options[i].value + '" style="">'
+				+ "<div style='display: table; border-spacing: 0px;' <div style='display: table-row'><div style='display: table-cell;'><img id='img" + x + "' alt='[ ]' src='/touchscreentoolkit/lib/images/unticked.jpg'></div><div id='optionValue" + x + "' style='display: table-cell; vertical-align: middle; text-align: left; padding-left: 15px;'>" 
+				+ options[i].value 
+				+ "</div></div>"				
+				 + "</li>";
+			if(css == "odd") {
+				css = "even";
+			} else {
+				css = "odd";
+			}
+
+        	$("drug_induced_effects").innerHTML += "<option>" + options[i].value + "</option>";
+       }
+      }
+    }
+
+    options = $('additional_symptoms').options;
+
+    for (var i=0; i < options.length; i++) {
+		if (options[i].selected && options[i].value != "") {
+			if (myArray.indexOf(options[i].value) != -1) {
+				x = x + 1;
+        		symptoms +=  '<li id="' + x + '" class="' + css + '" onclick="null; updateTouchscreenInputForSelect(__$(\'optionValue\' + this.id));" onmousedown="" tag="odd" tstvalue="' + options[i].value + '" style="">'
+				+ "<div style='display: table; border-spacing: 0px;' <div style='display: table-row'><div style='display: table-cell;'><img id='img" + x + "' alt='[ ]' src='/touchscreentoolkit/lib/images/unticked.jpg'></div><div id='optionValue" + x + "' style='display: table-cell; vertical-align: middle; text-align: left; padding-left: 15px;'>" 
+				+ options[i].value 
+				+ "</div></div>"				
+				 + "</li>";
+			if(css == "odd") {
+				css = "even";
+			} else {
+				css = "odd";
+			}
+
+        	$("drug_induced_effects").innerHTML += "<option>" + options[i].value + "</option>";
+       }
+      }
+    }
+
+    $("tt_currentUnorderedListOptions").innerHTML = symptoms;
+  }
+
+  function checkPregnancyAndAge() {
+    var patientAge = "<%= @patient_bean.age.to_i %>";
+    var pregnancyStatus = $('pregnant').value;
+
+    if ((patientAge >= 55) && pregnancyStatus == "YES") {
+       return 'true';
+    } else {	
+      return 'false';
+    }
+  }
+
+  function checkBreastfeedingAndAge() {
+    var patientAge = "<%= @patient_bean.age.to_i %>";
+    var breastfeedingStatus = $('breast_feeding').value;
+
+    if ((patientAge >= 55) && breastfeedingStatus == "YES") {
+       return 'true';
+    } else {
+      return 'false';
+    }
+  }
+  
+</script>
+
+	<% if @patient_is_child_bearing_female %>
+
+		<form action="/encounters/create" method='post'>
+			<%= hidden_field_tag "encounter[encounter_type_name]", "PNC FOLLOWUP" %>
+			<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
+			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
+			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
+
+			<%= touch_yes_no_tag "SCHEDULED VISIT", @patient, nil,
+				{	:id => "picked_up_supply",
+					:helpText => "Was this a scheduled visit?" } %>
+
+			<%= touch_yes_no_tag "CURRENTLY USING FAMILY PLANNING METHOD", @patient, nil,
+				{	:id => "on_fpm",
+					:helpText => "Currently using family planning method" } %>
+
+			<%= touch_select_tag "FAMILY PLANNING METHOD", @patient, options_for_select(@select_options['family_planning_methods']),
+				{	:id => "fpm_used",
+					:condition => '$("on_fpm").value == "YES"',
+					:multiple => true,
+					:tt_pageStyleClass => "NoKeyboard",
+					:helpText => "What method?" } %>
+
+			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
+				{	:id => "refill_fpm",
+					:helpText => "Refill on family planning method on this visit?" } %>
+
+			<%= touch_yes_no_na_tag "PICKED UP DRUG SUPPLY", @patient, nil,
+				{	:id => "picked_up_supply",
+					:helpText => "Did the patient pick up drug supply?" } %>
+
+			<%= hidden_field_tag "filter[provider]", nil %>
+			<%= submit_tag "Finish" %>    
+		</form>
+	<% else %>
+		<form action="/encounters/create" method='post'>
+			<%= hidden_field_tag "encounter[encounter_type_name]", "PNC FOLLOWUP" %>
+			<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
+			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
+			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
+
+			<%= touch_yes_no_tag "SCHEDULED VISIT", @patient, nil,
+				{	:id => "picked_up_supply",
+					:helpText => "Was this a scheduled visit?" } %>
+
+			<%= touch_yes_no_tag "CURRENTLY USING FAMILY PLANNING METHOD", @patient, nil,
+				{	:id => "on_fpm",
+					:helpText => "Currently using family planning method" } %>
+
+			<%= touch_select_tag "FAMILY PLANNING METHOD", @patient, options_for_select(@select_options['family_planning_methods']),
+				{	:id => "fpm_used",
+					:condition => '$("on_fpm").value == "YES"',
+					:multiple => true,
+					:tt_pageStyleClass => "NoKeyboard",
+					:helpText => "What method?" } %>
+
+			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
+				{	:id => "refill_fpm",
+					:helpText => "Refill on family planning method on this visit?" } %>
+
+			<%= touch_yes_no_tag "PICKED UP DRUG SUPPLY", @patient, nil,
+				{	:id => "picked_up_supply",
+					:helpText => "Did the patient pick up drug supply?" } %>
+
+			<%= hidden_field_tag "filter[provider]", nil %>
+			<%= submit_tag "Finish" %>    
+		</form>
+
+	<% end %>
+

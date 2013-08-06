@@ -1,0 +1,658 @@
+<style>
+	.tt_controls_date_of_confirmatory_hiv_test #num { display:none; }
+
+	.tt_controls_date_art_last_taken #num { display:none; }
+
+	.tt_controls_date_of_confirmatory_hiv_test table {  position: absolute; top: -360px; }
+
+	.tt_controls_date_art_last_taken table {  position: absolute; top: -360px; }
+
+	.tt_controls_last_arv_drugs_taken .keyboard { display:none; }
+
+  .tt_controls_cd4_count #qwerty , .tt_controls_cd4_percent #qwerty { 
+    display: none; 
+   }                              
+                                                                                
+  .tt_controls_cd4_count #equals, .tt_controls_cd4_percent #equals { 
+    display: inline; 
+  }                            
+                                                                                
+  .tt_controls_cd4_count #lessthan, .tt_controls_cd4_count #greaterthan {       
+    position: absolute;                                                         
+    right: 65%;                                                                 
+  }                                                                             
+                                                           
+  .tt_controls_cd4_percent #lessthan, .tt_controls_cd4_percent #greaterthan {       
+    position: absolute;                                                         
+    right: 65%;                                                                 
+  }                                                                             
+                     
+  .tt_controls_cd4_count #greaterthan , .tt_controls_cd4_percent #greaterthan{                                         
+    position: absolute;                                                         
+    right: 65%;                                                                 
+    top: 5px;                                                                   
+  }                                                                             
+                                                                                
+  .tt_controls_cd4_count #lessthan , .tt_controls_cd4_percent #lessthan {                                            
+    top: 145px;                                                                 
+  }
+
+  .tt_controls_cd4_count #lessthan, .tt_controls_cd4_count #greaterthan { display:block; float:right }
+  .tt_controls_cd4_percent #lessthan, .tt_controls_cd4_percent #greaterthan { display:block; float:right }
+
+  .tt_controls_initial_weight_kg #qwerty , .tt_controls_initial_height_cm #qwerty { 
+    display: none; 
+   }                              
+                                                                                
+	.tt_controls_confirmatory_hiv_test_year #Unknown { display: inline; }
+
+	.tt_controls_confirmatory_hiv_test_month .keyboard { display:none; }
+
+	#tt_page_confirmatory_hiv_test_month .options {  height: 90%; }
+
+	#tt_page_confirmatory_hiv_test_month .inputFrameClass {  height: 86%; }
+
+	.tt_controls_month_started_art .keyboard { display:none; }
+
+	#tt_page_month_started_art .options {  height: 90%; }
+
+	#tt_page_month_started_art .inputFrameClass {  height: 86%; }
+
+	.tt_controls_year_art_last_taken #Unknown { display: inline; }
+
+	.tt_controls_month_art_last_taken .keyboard { display:none; }
+
+	#tt_page_month_art_last_taken .options {  height: 90%; }
+
+	#tt_page_month_art_last_taken .inputFrameClass {  height: 86%; }
+
+	.tt_controls_year_started_art #Unknown { display: inline; }
+
+</style>
+
+<%= javascript_include_tag "dateformat" %>
+
+<script>
+  var tt_cancel_destination = "/patients/show/<%= @patient.patient_id %>"
+  var patient_age = null;
+
+	function isNumber(n) {
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	}
+
+  function validateDOB() {                                                      
+    setDOB();                                                                   
+    curr_date = new Date();                                                     
+                                                                                
+    if (dateCreate(set_dob) == 'Invalid Date') {                                
+      if (set_dob.split('-')[1] == 'Unknown')                                   
+        return true                                                             
+                                                                                
+      if (curr_date.getFullYear() == parseInt(dob_year)) {                      
+        if ((curr_date.getMonth() + 1) < parseInt(dob_month)){                  
+          if (document.getElementById('tt_page_month_started_art') != null)        
+            return true                                                         
+                                                                                
+          return false                                                          
+        }                                                                       
+      }                                                                         
+                                                                                
+      if (dob_month == 'Unknown'){                                              
+        if (curr_date.getFullYear() == parseInt(dob_year)) {                    
+          if ((curr_date.getMonth() + 1) < parseInt(dob_month))                 
+            return false                                                        
+        }                                                                       
+      }                                                                         
+    }else{                                                                      
+      if (document.getElementById('tt_page_month_started_art') != null)            
+        return true                                                             
+                                                                                
+      if (curr_date < dateCreate(set_dob))                                      
+        return false                                                            
+    }                                                                           
+    return true                                                                 
+  }   
+
+  function checkBirthDate(){
+    var dateCheck = "";
+    var confirmatoryHIVtestDate = new Date ($('confirmatory_hiv_test_date').value);
+    var patientBirthDate = new Date("<%= @patient.person.birthdate.year %>","<%= @patient.person.birthdate.month - 1 %>","<%= @patient.person.birthdate.day %>");
+
+    if (patientBirthDate <= confirmatoryHIVtestDate){
+      dateCheck = 'true'
+    } else {
+      dateCheck = 'false'
+    }
+    return dateCheck; 
+  }
+
+  function showConditions() {
+    if ($("ever_registered_at_ART_clinic").value == "NO") {
+      return false;
+    }else if($('has_transfer_letter').value == "YES") {
+      return true;
+    }else {return false;}
+  }
+
+  function updateCD4CountKeyPad() {                                             
+    curr_page = tstCurrentPage - 1                                              
+    buttons = document.getElementsByClassName("keyboardButton");                
+    $("clearButton").setAttribute("onmousedown","clearInput();updateCD4CountKeyPad();");
+    $("backButton").setAttribute("onmousedown",";gotoPage(" + curr_page + ", null, true);resetPad();");
+    $("nextButton").setAttribute("onmousedown","gotoNextPage();resetPad();");   
+                                                                                
+    for(i = 0; i < buttons.length ; i++) {                                      
+      if (buttons[i].id == "equals" || buttons[i].id == "greaterthan" || buttons[i].id == "lessthan") {
+        buttons[i].disabled = false;                                            
+        if( buttons[i].id == "equals"){                                         
+          buttons[i].setAttribute("onmousedown","press('=');resetKeyPad();");   
+        }else if( buttons[i].id == "lessthan") {                                
+          buttons[i].setAttribute("onmousedown","press('<');resetKeyPad();");   
+        }else if( buttons[i].id == "greaterthan") {                             
+          buttons[i].setAttribute("onmousedown","press('>');resetKeyPad();");   
+        }                                                                       
+      }else{                                                                    
+        buttons[i].disabled = true;                                             
+      }                                                                         
+    }                                                                           
+  }
+
+
+   function updateCD4Count() {                                                   
+    var cd4_available = $('new_cd4_count_available').value == 'YES';            
+    var cd4_count = cd4_available ? $('cd4_count').value : null;                
+                                                                                
+    try { cd4_count_numeric = parseInt(cd4_count); } catch(e) { cd4_count_numeric = null; }
+                                                                                
+    if (cd4_count_numeric == null || ''+cd4_count_numeric == 'NaN') {           
+      try {                                                                     
+        var matches = cd4_count.match(/^(>|<|=)([0-9\.]+)$/);                   
+        cd4_count_modifier = matches[1];                                        
+        cd4_count_estimate = parseInt(matches[2]);                              
+        cd4_count_numeric = cd4_count_estimate;                                 
+        if (cd4_count_modifier == '<') cd4_count_numeric -= 1;                  
+        if (cd4_count_modifier == '>') cd4_count_numeric += 1;                  
+      } catch(e) {                                                              
+        cd4_count_modifier = null;                                              
+        cd4_count_estimate = null;                                              
+        cd4_count_numeric = null;                                               
+      }                                                                         
+    }                                                                           
+                                                                                    
+    if (cd4_count_numeric == null || '' + cd4_count_numeric == 'NaN') {         
+      $('cd4_count_less_than_250').value = "UNKNOWN";                           
+      $('cd4_count_less_than_350').value = "UNKNOWN";                           
+    } else {                                                                    
+      $('cd4_count_less_than_250').value = (cd4_count_numeric <= 250) ? "YES" : "NO";
+      $('cd4_count_less_than_350').value = (cd4_count_numeric <= 350) ? "YES" : "NO";
+    }                                                                        
+  }                                                                             
+   
+  function updateCD4Percent() {                                                 
+    var cd4_percent_available = $('new_cd4_percent_available').value == 'YES';  
+    var cd4_percent = cd4_percent_available ? $('cd4_percent').value : null;    
+    var cd4_percent_numeric, cd4_percent_estimate, cd4_percent_modifier;        
+                                                                                
+    try { cd4_percent_numeric = parseInt(cd4_percent); } catch(e) { cd4_percent_numeric = null; }
+                                                                                
+    if (cd4_percent_numeric == null || ''+cd4_percent_numeric == 'NaN') {       
+      try {                                                                     
+        var matches = cd4_percent.match(/^(>|<|=)([0-9\.]+)$/);                   
+        cd4_percent_modifier = matches[1];                                      
+        cd4_percent_estimate = parseInt(matches[2]);                            
+        cd4_percent_numeric = cd4_percent_estimate;                             
+        if (cd4_percent_modifier == '<') cd4_percent_numeric -= 1;              
+        if (cd4_percent_modifier == '>') cd4_percent_numeric += 1;              
+      } catch(e) {                                                              
+        cd4_percent_modifier = null;                                            
+        cd4_percent_estimate = null;                                            
+        cd4_percent_numeric = null;                                             
+      }                                                                         
+    }                                                                           
+                                                                                
+    if (cd4_percent_numeric == null || ''+cd4_percent_numeric == 'NaN') {       
+      $('cd4_percent_less_than_25').value = "UNKNOWN";                          
+    } else {                                                                    
+      $('cd4_percent_less_than_25').value = (cd4_percent_numeric < 25) ? "YES" : "NO";
+    }                                                                           
+  }
+
+
+
+  function resetPad() {                                                         
+    curr_page = tstCurrentPage - 1                                              
+    buttons = document.getElementsByClassName("keyboardButton");                
+    for(i = 0; i < buttons.length ; i++) {                                      
+        buttons[i].disabled = false;                                            
+    }                                                                           
+    $("clearButton").setAttribute("onmousedown","clearInput();");               
+    $("backButton").setAttribute("onmousedown",";gotoPage(" + curr_page + ", null, true);");
+    $("nextButton").setAttribute("onmousedown","gotoNextPage();");              
+  }                                                                             
+                                                                                
+  function resetKeyPad() {                                                      
+    buttons = document.getElementsByClassName("keyboardButton");                
+    for(i = 0; i < buttons.length ; i++) {                                      
+      if (buttons[i].id == "equals" || buttons[i].id == "greaterthan" || buttons[i].id == "lessthan") {
+        buttons[i].disabled = true;                                             
+      }else{                                                                    
+        buttons[i].disabled = false;                                            
+      }                                                                         
+    }                                                                           
+  }  
+
+  function updateCD4CountKeyPad() {                                             
+    curr_page = tstCurrentPage - 1                                              
+    buttons = document.getElementsByClassName("keyboardButton");                
+    $("clearButton").setAttribute("onmousedown","clearInput();updateCD4CountKeyPad();");
+    $("backButton").setAttribute("onmousedown",";gotoPage(" + curr_page + ", null, true);resetPad();");
+    $("nextButton").setAttribute("onmousedown","gotoNextPage();resetPad();");   
+                                                                                
+    for(i = 0; i < buttons.length ; i++) {                                      
+      if (buttons[i].id == "equals" || buttons[i].id == "greaterthan" || buttons[i].id == "lessthan") {
+        buttons[i].disabled = false;                                            
+        if( buttons[i].id == "equals"){                                         
+          buttons[i].setAttribute("onmousedown","press('=');resetKeyPad();");   
+        }else if( buttons[i].id == "lessthan") {                                
+          buttons[i].setAttribute("onmousedown","press('<');resetKeyPad();");   
+        }else if( buttons[i].id == "greaterthan") {                             
+          buttons[i].setAttribute("onmousedown","press('>');resetKeyPad();");   
+        }                                                                       
+      }else{                                                                    
+        buttons[i].disabled = true;                                             
+      }                                                                         
+    }                                                                           
+  }  
+
+  function getDateStartedART() {
+    var year = $("year_started_art").value;
+    var month = $("month_started_art").value;
+    var day = $("day_started_art").value;
+
+    if (month.length == 1)
+      month = 0 + month;
+
+    if (day.length == 1)
+      day = 0 + day;
+
+    if(year == "Unknown") {
+      return new Date();
+    }else if(month == "Unknown") {
+      return new Date(year + "-07-01")
+    }else if(day == "Unknown") {
+      return new Date(year + "-" + month + "-01")
+    }else{
+      return new Date(year + "-" + month + "-" + day)
+    }
+  }
+  
+  function calculateWHOstage() {
+    stage = "I";
+    if ($("has_transfer_letter").value == "YES") {
+      if ($("stage_4_conditions").value.length > 0) {
+        stage = "IV";
+      }else if ($("stage_3_conditions").value.length > 0) {
+        stage = "III";
+      }else if ($("stage_2_conditions").value.length > 0) {
+        stage = "II";
+      }
+      var startDate = getDateStartedART();   
+    }
+
+    if(showARTstartDate() && $("year_started_art").value.toUpperCase() == "UNKNOWN") {
+      ARTstartDateEstimate = $("art_start_date_estimation").value;
+      <% curr_session_date = session[:datetime].to_date rescue Date.today %>
+      if (ARTstartDateEstimate == "6 months ago") {
+        var startDate = new Date("<%= (curr_session_date - 6.months).to_s%>");   
+      }else if (ARTstartDateEstimate == "12 months ago") {
+        var startDate = new Date("<%= (curr_session_date - 12.months).to_s%>");   
+      }else if (ARTstartDateEstimate == "18 months ago") {
+        var startDate = new Date("<%= (curr_session_date - 18.months).to_s%>");   
+      }else if (ARTstartDateEstimate == "24 months ago") {
+        var startDate = new Date("<%= (curr_session_date - 24.months).to_s%>");   
+      }else if (ARTstartDateEstimate == "Over 2 years ago") {
+        var startDate = new Date("<%= (curr_session_date - 30.months).to_s%>");   
+      }else{
+        var startDate = getDateStartedART();
+      }
+    }
+   
+    var patientBirthdate = new Date("<%=@patient.person.birthdate %>");
+    var dateCreated = new Date("<%=@patient.person.date_created %>");
+    var patientBirthdateEstimated = "<%=@patient.person.birthdate_estimated %>";
+   
+    if(!startDate)
+      return 
+    
+    var patient_age = age(patientBirthdate , patientBirthdateEstimated , dateCreated, startDate);
+
+    if (patient_age <= 14) {
+      $("who_stage").value = "WHO stage " + stage + " peds";
+    }else{
+      $("who_stage").value = "WHO stage " + stage + " adult";
+    }
+    $("date_started_art").value = dateFormat(startDate,"yyyy-mm-dd");
+  } 
+  
+  function age(birthdate,birthdate_estimated,date_created,today) {
+    patient_age = (today.getFullYear() - birthdate.getFullYear()) + ((today.getFullYear() - (birthdate.getMonth() + 1)) + ((today.getDate() - birthdate.getDate()) < 0 ? -1 : 0) < 0 ? - 1 : 0)
+    birth_date= birthdate                                                   
+    estimate = birthdate_estimated                                           
+    if (birth_date.month == 7 && birth_date.day == 1 && estimate == 1 && Time.now.month < birth_date.month && date_created.getFullYear() == (new Date().getFullYear())) {
+      return patient_age + 1                                                   
+    }else{
+      return patient_age
+    }
+  }
+  
+  function calculateBMI() {
+    var currentWeight = $("weight").value;
+    var currentHeight = $("height").value;
+    currentBmi = (currentWeight/(currentHeight*currentHeight)*10000).toFixed(1);
+    try {
+      $('bmi').value = currentBmi;
+    }catch(e){}
+  }
+  
+  function buildDate(type) {
+    if (type.match(/confirmatory/i)) {
+      var year = $("confirmatory_hiv_test_year").value;
+      var year_element = $("confirmatory_hiv_test_year");
+      var month = $("confirmatory_hiv_test_month").value;
+      var month_element = $("confirmatory_hiv_test_month");
+      var day = $("confirmatory_hiv_test_day").value;
+      var day_element = $("confirmatory_hiv_test_day");
+    }else if (type.match(/art_last_taken/i)) {
+      var year = $("year_art_last_taken").value;
+      var year_element = $("year_art_last_taken");
+      var month = $("month_art_last_taken").value;
+      var month_element = $("month_art_last_taken");
+      var day = $("day_art_last_taken").value;
+      var day_element = $("day_art_last_taken");
+    }
+
+    if(year.length < 1) {
+      if (type.match(/confirmatory/i)) {
+        $("confirmatory_hiv_test_date").value = null;
+      }else if (type.match(/art_last_taken/i)) {
+        $("date_art_last_taken").value = null;
+      }
+      return
+    }
+
+    if(day.length < 1) {
+      try {
+        var days = day_element;
+        for(i = 0;i<days.length;i++) {
+          if(days[i].value.length > 0){
+            day = days[i].value;
+            break;
+          }
+        }
+      }catch(e){ return }
+    }
+
+    if (month.length == 1)
+      month = 0 + month;
+
+    if (day.length == 1)
+      day = 0 + day;
+
+
+
+    if (type.match(/confirmatory/i)) {
+      if(year == "Unknown") {
+        $("confirmatory_hiv_test_date").value = year;
+      }else if(month == "Unknown") {
+        $("confirmatory_hiv_test_date").value = year + "-07-01";
+      }else if(day == "Unknown") {
+        $("confirmatory_hiv_test_date").value = year + "-" + month + "-01";
+      }else{
+        $("confirmatory_hiv_test_date").value = year + "-" + month + "-" + day;
+      }
+    }else if (type.match(/art_last_taken/i)) {
+      if(year == "Unknown") {
+        $("date_art_last_taken").value = year;
+      }else if(month == "Unknown") {
+        $("date_art_last_taken").value = year + "-07-01";
+      }else if(day == "Unknown") {
+        $("date_art_last_taken").value = year + "-" + month + "-01";
+      }else{
+        $("date_art_last_taken").value = year + "-" + month + "-" + day;
+      }
+    }
+  } 
+
+  function setUnkownStage() {
+    if($("has_transfer_letter").value == "YES")
+      return
+
+    everReceivedARVs = $("ever_received_art").value;
+    everRegisteredAtARTclinic = $("ever_registered_at_ART_clinic").value;
+
+    if (everRegisteredAtARTclinic == "YES" && everReceivedARVs == "YES" && $("has_transfer_letter").value == "NO") {
+      $("reason_for_art_eligibility").value = "Unknown";
+      $("drug_start_date").value = "Estimated";
+      calculateWHOstage();
+    }else{
+      $("reason_for_art_eligibility").value = null;
+      $("drug_start_date").value = null;
+    }
+  }
+
+  function setReasonForStarting() {
+    var backButton = $("backButton");
+    backButton.setAttribute("onmousedown","resetReasonForStarting();gotoPage('" + (tstCurrentPage - 1) + "',null,true);");
+    $("reason_for_art_eligibility").value = null;
+    $("drug_start_date").value = null;
+  }
+
+  function resetReasonForStarting() {
+    var backButton = $("backButton");
+    backButton.setAttribute("onmousedown","gotoPage('" + tstCurrentPage + "',null,true);");
+    $("reason_for_art_eligibility").value = null;
+  }
+
+  function validateDate() {
+    return false;
+  }
+
+  function showARTstartDate() {
+    if($("ever_received_art").value == "YES" && $("ever_registered_at_ART_clinic").value == "YES"){
+      if($("has_transfer_letter").value == "NO" || $("has_transfer_letter").value == "YES")
+        return true
+    } 
+    return false
+  }
+</script>
+
+<% if @patient_is_child_bearing_female %>
+	<form id='appointment' action="/encounters/create" method='post'>
+		<%= hidden_field_tag "encounter[encounter_type_name]", "TEMTCT REGISTRATION" %>
+		<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
+		<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
+		<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
+
+		<%= hidden_field_tag("programs[][patient_program_id]", nil) %>
+		<%= hidden_field_tag("programs[][program_id]", Program.find_by_name('TeMTCT Program').id) %>
+		<%= hidden_field_tag("programs[][location_id]", Location.current_health_center.id) %>
+		<%= hidden_field_tag("programs[][date_enrolled]", session[:datetime] ) %>
+		<%= hidden_field_tag("programs[][states][][state]", "FOLLOWING") %>
+	  
+
+		<%= touch_yes_no_tag "PATIENT PREGNANT", @patient, nil,
+			{	:id => "patient_pregnant",
+			 	:helpText => "Is patient pregnant at the time of initiation?" } %>
+
+		<%= touch_yes_no_tag "HIV+", @patient, nil,
+			{	:id => "patient_hiv",
+			 	:condition => '$("patient_pregnant").value == "YES"',
+			 	:helpText => "Is patient HIV+ at the time of initiation?" } %>
+
+		<%= touch_yes_no_tag "PLAN TO NOT MOVE", @patient, nil,
+			{	:id => "plan_to_not_move",
+			 	:condition => '$("patient_hiv").value == "YES"',
+			 	:helpText => "Is patient NOT planning to move in the next 6-9 months?" } %>
+
+		<%= touch_yes_no_tag "NOT ENROLLED AT OTHER FACILITY", @patient, nil,
+			{	:id => "not_at_other_facility",
+			 	:condition => '$("plan_to_not_move").value == "YES"',
+			 	:helpText => "Is patient NOT enrolled in study at other facility?" } %>
+
+		<%= touch_yes_no_tag "SIGNED CONSENT FORM", @patient, nil,
+			{	:id => "sign_form",
+			 	:condition => '$("not_at_other_facility").value == "YES"',
+			 	:helpText => "Has patient signed informed consent form?" } %>
+
+		<%= touch_yes_no_tag "ENROLLED AT FIRST ANC VISIT", @patient, nil,
+			{	:id => "enroled_at_first_visit",
+			 	:condition => '$("sign_form").value == "YES"',
+			 	:helpText => "Was the patient enrolled at first ANC visit?" } %>
+
+		<%= touch_text_field_tag "ANC NUMBER", @patient, nil,
+			{	:id => "anc_number",
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "Enter the patient's ANC number",
+				:tt_pageStyleClass => "NoKeyboard", 
+				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
+
+		<%= touch_date_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
+			{	:id => "estimated_delivery_date",                                               
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What is the estimated delivery date at enrolment?" } %>
+
+		<%= touch_text_field_tag "GESTATION WEEKS", @patient, nil,
+			{	:id => "gestation_age",
+				:max => '50',
+				:field_type => 'number',
+				:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
+				:validationMessage => "You must enter a number",
+				:condition => '$("sign_form").value == "YES" && $("enroled_at_first_visit").value == "YES" ',
+				:helpText => "What was the gestation age(in weeks) at enrolment?",
+				:tt_pageStyleClass => "NoKeyboard", 
+				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
+
+		<%= touch_text_field_tag "PARITY", @patient, nil,
+			{	:id => "parity",
+				:max => '50',
+				:field_type => 'number',
+				:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
+				:validationMessage => "You must enter a number",
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What was the parity at enrolment?",
+				:tt_pageStyleClass => "NoKeyboard", 
+				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
+
+		<%= touch_select_tag "MARITAL STATUS", @patient, concept_set_options('MARITAL STATUS'),
+			{	:id => 'treatment_status',
+				:multiple => false,
+				:helpText => "What is the ART treatment status for the patient?" } %>
+
+		<%= touch_yes_no_tag "PATIENT TRANSFERRED IN", @patient, nil,
+			{	:id => "transfer_in_patient",
+			 	:condition => '$("sign_form").value == "YES" && $("enroled_at_first_visit").value == "NO"',
+			 	:helpText => "Was the patient a transfer in at enrolment?" } %>
+
+		<%= touch_location_tag "TRANSFER IN FROM", @patient, nil,
+			{	:id => "transfer_in_facility",
+			 	:condition => '$("sign_form").value == "YES" && $("transfer_in_patient").value == "YES"',
+			 	:helpText => "What was the location of previous ANC visit(s)?" } %>
+
+		<%= touch_yes_no_tag "EVER RECEIVED ART", @patient, nil,
+			{	:id => "ever_received_art",
+			 	:condition => '$("sign_form").value == "YES"',
+			 	:helpText => "Has the patient ever received ARVs prior to enrolment?" } %>
+
+		<%= touch_date_tag "Date antiretrovirals started", @patient, nil,                   
+			{	:id => "date_started_art",                                               
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What is the date treatment was started prior to enrolment?" } %>
+
+		<%= touch_date_tag "CONFIRMATORY HIV TEST DATE", @patient, nil,                   
+			{	:id => "confirmatory_hiv_test_date",                                               
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What is the confirmatory HIV test date for the patient?" } %>
+
+		<%= touch_text_field_tag "ART NUMBER", @patient, nil,
+			{	:id => "art_number",
+				:condition => '$("sign_form").value == "YES" && $("ever_received_art").value == "YES"',
+				:helpText => "Enter the patient's ART number",
+				:tt_pageStyleClass => "NoKeyboard", 
+				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
+
+		<%= hidden_field_tag "filter[provider]", nil %>
+		<%= submit_tag "Finish" %>    
+
+	</form>
+<% elsif @patient_bean.age <= 5 %>
+	<form id='appointment' action="/encounters/create" method='post'>
+		<%= hidden_field_tag "encounter[encounter_type_name]", "TEMTCT REGISTRATION" %>
+		<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
+		<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
+		<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
+
+		<%= hidden_field_tag("programs[][patient_program_id]", nil) %>
+		<%= hidden_field_tag("programs[][program_id]", Program.find_by_name('TeMTCT Program').id) %>
+		<%= hidden_field_tag("programs[][location_id]", Location.current_health_center.id) %>
+		<%= hidden_field_tag("programs[][date_enrolled]", session[:datetime] ) %>
+		<%= hidden_field_tag("programs[][states][][state]", "FOLLOWING") %>
+	  
+		<%= touch_select_tag "ARVS IN LABOUR", @patient, concept_set_options('ARVS IN LABOUR'),
+			{	:id => "arvs_in_labour",
+				:multiple => false,
+			 	:helpText => "ARVs in labour" } %>
+
+		<%= touch_select_tag "BABY ARVS AT BIRTH", @patient, options_for_select([['', ''], ['None', 'NONE'], ['NVP', 'NVP'], ['NVP AZT', 'NVP AZT'], ['AZT', 'AZT'], ['Unknown', 'UNKNOWN']]),
+			{	:id => "arvs_at_birth",
+				:multiple => false,
+			 	:helpText => "Baby ARVs at birth" } %>
+
+		<%= touch_select_tag "BABY ARVS CONT'D", @patient, options_for_select([['', ''], ['None', 'NONE'], ['NVP', 'NVP'], ['AZT', 'AZT'], ['Unknown', 'UNKNOWN']]),
+			{	:id => "arvs_cont",
+				:multiple => false,
+			 	:helpText => "Baby ARVs cont'd" } %>
+
+		<%= touch_text_field_tag "NUMBER OF WEEKS ON TREATMENT", @patient, nil,
+			{	:id => "number_of_weeks",
+				:helpText => "Number of weeks taken (Adherence)" } %>
+
+		<%= touch_select_tag "DELIVERY LOCATION", @patient, options_for_select([['', ''], ['Home', 'HOME'], ['Clinic', 'CLINIC']]),
+			{	:id => "delivery_location",
+				:multiple => false,
+			 	:helpText => "Delivery location" } %>
+
+		<%= touch_text_field_tag "GESTATION WEEKS", @patient, nil,
+			{	:id => "gestation_age",
+				:field_type => 'number',
+				:helpText => "What was the gestation age(in weeks) at birth?" } %>
+
+		<%= touch_yes_no_tag "CPT GIVEN", @patient, nil,
+			{	:id => "cpt_given",
+			 	:helpText => "Was CPT given?" } %>
+
+		<%= touch_select_tag "BREAST FEEDING", @patient, concept_set_options("BREAST FEEDING"),
+			{	:id => "breast_feeding",
+				:multiple => false,
+			 	:helpText => "Baby ARVs at birth" } %>
+
+		<%= hidden_field_tag "filter[provider]", nil %>
+		<%= submit_tag "Finish" %>    
+
+	</form>
+
+<% else %>
+	
+	<div class="inputPage NoKeyboard" id="page" style="display: block;">
+		<div id="trigger"></div>
+		<div id="infoBar" class="infoBarClass"></div>
+		<label id="helpText" class="helpTextClass" for="">Patient already registered or noteligible for the TeMTCT program</label>
+	</div>
+	<div id="buttons" class="buttonsDiv" style="top:456;">
+		<div id="tt_extraButtons"></div>
+		<button onmousedown="window.location=tt_cancel_destination;" id="cancelButton" class="button navButton red"><span>Cancel</span></button>
+	</div>
+	<script>
+		setTimeout("window.location=tt_cancel_destination;", 5000);
+	</script>
+
+<% end %>
