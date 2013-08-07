@@ -544,10 +544,28 @@
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
 		<%= touch_select_tag "MARITAL STATUS", @patient, concept_set_options('MARITAL STATUS'),
-			{	:id => 'treatment_status',
+			{	:id => 'marital_status',
 				:multiple => false,
 				:condition => '$("sign_form").value == "YES"',
 				:helpText => "What is the marital status for the patient?" } %>
+
+		<%= touch_select_tag "HIGHEST LEVEL OF SCHOOL COMPLETED", @patient, concept_set_options('HIGHEST LEVEL OF SCHOOL COMPLETED'),
+			{	:id => 'education_level',
+				:multiple => false,
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What is the highest level of education completed?" } %>
+
+		<%= touch_select_tag "DISTANCE TO H/CENTER", @patient, concept_set_options('DISTANCE TO H/CENTER'),
+			{	:id => 'distance',
+				:multiple => false,
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What is the distance between home and health center for the patient?" } %>
+
+		<%= touch_select_tag "MODE OF TRANSPORT", @patient, concept_set_options('MODE OF TRANSPORT'),
+			{	:id => 'transport',
+				:multiple => false,
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "What mode of transport did the patient use to get to the health center?" } %>
 
 		<%= touch_yes_no_tag "PATIENT TRANSFERRED IN", @patient, nil,
 			{	:id => "transfer_in_patient",
