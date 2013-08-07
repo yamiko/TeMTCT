@@ -156,7 +156,7 @@
 			<%= touch_yes_no_na_tag "PICKED UP SUPPLY", @patient, nil,
 				{	:id => "picked_up_supply",
 				 	:condition => '$("treatment_status").value != "Alive not on ART"',
-					:helpText => "Did the patient pick up drug supply?" } %>
+					:helpText => "Did the patient pick up ART drug supply?" } %>
 
 
 			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),

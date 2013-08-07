@@ -40,7 +40,20 @@ class EncountersController < GenericEncountersController
 
 		if (params[:encounter_type].upcase rescue '') == 'ANC_FOLLOWUP'
 
-			other = []
+			other = ['Other', 'Other']
+
+			@arv_drugs = temtct_regimen_options
+=begin
+.collect { | drug |
+				if (CoreService.get_global_property_value('use_regimen_short_names').to_s == "true" rescue false)					
+					other << [drug.concept.shortname, drug.concept.shortname] if (drug.concept.shortname.upcase.include?('OTHER') || drug.concept.shortname.upcase.include?('UNKNOWN'))
+					[drug.concept.shortname, drug.concept.shortname] 
+				else
+					other << [drug.concept.fullname, drug.concept.fullname] if (drug.concept.fullname.upcase.include?('OTHER') || drug.concept.fullname.upcase.include?('UKNOWN'))
+					[drug.concept.fullname, drug.concept.fullname]
+				end
+			}
+
 			@arv_drugs = temtct_arv_drugs.collect { | drug | 
 				if (CoreService.get_global_property_value('use_regimen_short_names').to_s == "true" rescue false)					
 					other << [drug.concept.shortname, drug.concept.shortname] if (drug.concept.shortname.upcase.include?('OTHER') || drug.concept.shortname.upcase.include?('UNKNOWN'))
@@ -50,6 +63,7 @@ class EncountersController < GenericEncountersController
 					[drug.concept.fullname, drug.concept.fullname]
 				end
 			}
+=end
 			@arv_drugs = @arv_drugs - other
 			@arv_drugs = @arv_drugs.sort {|a,b| a.to_s.downcase <=> b.to_s.downcase}
 			@arv_drugs = @arv_drugs + other
@@ -1101,6 +1115,32 @@ class EncountersController < GenericEncountersController
 		arv_concept       = ConceptName.find_by_name("TeMTCT ARVs").concept_id
 		arv_drug_concepts = ConceptSet.all(:conditions => ['concept_set = ?', arv_concept])
 		arv_drug_concepts
+	end
+
+  # Generate a given list of Regimen+s for the given +Patient+ <tt>weight</tt>
+  # into select options. 
+	def temtct_regimen_options
+
+		weight = 60
+
+		my_drugs = temtct_arv_drugs.map { |t| t.concept_id }
+
+
+		regimens = Regimen.find(	:all,
+									:order => 'regimen_index',
+									:conditions => ['? >= min_weight AND ? < max_weight AND concept_id IN (?)', weight, weight, my_drugs])
+		
+		
+		options = regimens.map { |r|
+			concept_name = (r.concept.concept_names.typed("SHORT").first ||	r.concept.concept_names.typed("FULLY_SPECIFIED").first).name
+			if r.regimen_index.blank?
+				["#{concept_name}","#{concept_name}"]
+			else
+				["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
+			end
+		}.sort_by{| r | r[0]}.uniq
+
+		return options
 	end
 
 
