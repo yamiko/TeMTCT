@@ -163,11 +163,12 @@
 
 			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
 				{	:id => "refill_fpm",
+					:condition => '$("on_fpm").value == "YES"',
 					:helpText => "Refill on family planning method on this visit?" } %>
 
 			<%= touch_yes_no_na_tag "PICKED UP DRUG SUPPLY", @patient, nil,
 				{	:id => "picked_up_supply",
-					:helpText => "Did the patient pick up drug supply?" } %>
+					:helpText => "Did the patient pick up ARV drug supply?" } %>
 
 			<%= hidden_field_tag "filter[provider]", nil %>
 			<%= submit_tag "Finish" %>    
