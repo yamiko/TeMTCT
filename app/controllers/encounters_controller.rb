@@ -957,7 +957,7 @@ class EncountersController < GenericEncountersController
 			valid_program = false			
 			observations = []
 			(params[:observations] || []).each do |observation|
-				if observation['concept_name'].upcase == 'SIGNED CONSENT FORM' && observation['value_coded_or_text'] != 'YES'
+				if observation['concept_name'].upcase == 'SIGNED CONSENT FORM' && observation['value_coded_or_text'] == 'YES'
 					valid_program = true
 				end
 
@@ -967,7 +967,7 @@ class EncountersController < GenericEncountersController
 
 			end
 
-			if valid_program = false
+			if valid_program == false
 				params[:programs] = nil
 			end
 
