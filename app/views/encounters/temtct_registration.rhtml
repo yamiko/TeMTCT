@@ -482,12 +482,12 @@
 
 		<%= touch_yes_no_tag "PATIENT PREGNANT", @patient, nil,
 			{	:id => "patient_pregnant",
-			 	:helpText => "Is patient pregnant at the time of initiation?" } %>
+			 	:helpText => "Is patient pregnant at the time of booking?" } %>
 
 		<%= touch_yes_no_tag "HIV+", @patient, nil,
 			{	:id => "patient_hiv",
 			 	:condition => '$("patient_pregnant").value == "YES"',
-			 	:helpText => "Is patient HIV+ at the time of initiation?" } %>
+			 	:helpText => "Is patient confirmed as HIV+ at the time of booking?" } %>
 
 		<%= touch_yes_no_tag "PLAN TO NOT MOVE", @patient, nil,
 			{	:id => "plan_to_not_move",
@@ -503,11 +503,6 @@
 			{	:id => "sign_form",
 			 	:condition => '$("not_at_other_facility").value == "YES"',
 			 	:helpText => "Has patient signed informed consent form?" } %>
-
-		<%= touch_yes_no_tag "ENROLLED AT FIRST ANC VISIT", @patient, nil,
-			{	:id => "enroled_at_first_visit",
-			 	:condition => '$("sign_form").value == "YES"',
-			 	:helpText => "Was the patient enrolled at first ANC visit?" } %>
 
 		<%= touch_text_field_tag "ANC NUMBER", @patient, nil,
 			{	:id => "anc_number",
@@ -528,7 +523,7 @@
 				:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
 				:validationMessage => "You must enter a number",
 				:condition => '$("sign_form").value == "YES" && $("enroled_at_first_visit").value == "YES" ',
-				:helpText => "What was the gestation age(in weeks) at enrolment?",
+				:helpText => "What is the gestation age(in weeks) at first ANC visit?",
 				:tt_pageStyleClass => "NoKeyboard", 
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
@@ -566,6 +561,11 @@
 				:multiple => false,
 				:condition => '$("sign_form").value == "YES"',
 				:helpText => "What mode of transport did the patient use to get to the health center?" } %>
+
+		<%= touch_yes_no_tag "ENROLLED AT FIRST ANC VISIT", @patient, nil,
+			{	:id => "enroled_at_first_visit",
+			 	:condition => '$("sign_form").value == "YES"',
+			 	:helpText => "Was the patient enrolled at first ANC visit?" } %>
 
 		<%= touch_yes_no_tag "PATIENT TRANSFERRED IN", @patient, nil,
 			{	:id => "transfer_in_patient",
