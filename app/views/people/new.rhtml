@@ -115,13 +115,9 @@
 	<%= hidden_field_tag "person[names][family_name]", "N/A" %>
 
 	<% if params[:identifier][5, 1] == 'M' %>
-		<% %>
 		<%= hidden_field_tag 'person[gender]', 'Female' %>
 	<% else %
-		<% %>
-		<%= select_tag 'person[gender]', options_for_select([['', ''], ['Male', 'M'], ['Female', 'F']]), 
-			{:id => 'gender', :helpText => 'Gender' } %>
-
+		<%= hidden_field_tag 'person[gender]', 'Male' %>
 	<% end %>
 
 	<%= hidden_field_tag "person[names][middle_name]", "N/A" %>

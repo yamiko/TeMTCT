@@ -43,27 +43,6 @@ class EncountersController < GenericEncountersController
 			other = ['Other', 'Other']
 
 			@arv_drugs = temtct_regimen_options
-=begin
-.collect { | drug |
-				if (CoreService.get_global_property_value('use_regimen_short_names').to_s == "true" rescue false)					
-					other << [drug.concept.shortname, drug.concept.shortname] if (drug.concept.shortname.upcase.include?('OTHER') || drug.concept.shortname.upcase.include?('UNKNOWN'))
-					[drug.concept.shortname, drug.concept.shortname] 
-				else
-					other << [drug.concept.fullname, drug.concept.fullname] if (drug.concept.fullname.upcase.include?('OTHER') || drug.concept.fullname.upcase.include?('UKNOWN'))
-					[drug.concept.fullname, drug.concept.fullname]
-				end
-			}
-
-			@arv_drugs = temtct_arv_drugs.collect { | drug | 
-				if (CoreService.get_global_property_value('use_regimen_short_names').to_s == "true" rescue false)					
-					other << [drug.concept.shortname, drug.concept.shortname] if (drug.concept.shortname.upcase.include?('OTHER') || drug.concept.shortname.upcase.include?('UNKNOWN'))
-					[drug.concept.shortname, drug.concept.shortname] 
-				else
-					other << [drug.concept.fullname, drug.concept.fullname] if (drug.concept.fullname.upcase.include?('OTHER') || drug.concept.fullname.upcase.include?('UKNOWN'))
-					[drug.concept.fullname, drug.concept.fullname]
-				end
-			}
-=end
 			@arv_drugs = @arv_drugs - other
 			@arv_drugs = @arv_drugs.sort {|a,b| a.to_s.downcase <=> b.to_s.downcase}
 			@arv_drugs = @arv_drugs + other
@@ -1093,7 +1072,10 @@ class EncountersController < GenericEncountersController
         print_and_redirect("/patients/dashboard_print_visit/#{params[:encounter]['patient_id']}","/patients/show/#{params[:encounter]['patient_id']}")
         return
       end
-      redirect_to next_task(@patient)
+
+		# Remove session date and redirect to next task
+		session[:datetime] = nil
+		redirect_to next_task(@patient)
      end
     else
       if params[:voided]
@@ -1120,8 +1102,11 @@ class EncountersController < GenericEncountersController
   # Generate a given list of Regimen+s for the given +Patient+ <tt>weight</tt>
   # into select options. 
 	def temtct_regimen_options
-
-		weight = 60
+		weight = 23
+		if @patient_is_child_bearing_female
+			weight = 60
+		end
+		
 
 		my_drugs = temtct_arv_drugs.map { |t| t.concept_id }
 
@@ -1136,7 +1121,11 @@ class EncountersController < GenericEncountersController
 			if r.regimen_index.blank?
 				["#{concept_name}","#{concept_name}"]
 			else
-				["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
+				if @patient_is_child_bearing_female
+					["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
+				else
+					["#{r.regimen_index}P - #{concept_name}", "#{r.regimen_index}P - #{concept_name}"]
+				end
 			end
 		}.sort_by{| r | r[0]}.uniq
 

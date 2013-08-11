@@ -152,18 +152,16 @@
 					:multiple => false,
 					:helpText => "What is the ART treatment status for the patient?" } %>
 
-
 			<%= touch_yes_no_na_tag "PICKED UP SUPPLY", @patient, nil,
 				{	:id => "picked_up_supply",
 				 	:condition => '$("treatment_status").value != "Alive not on ART"',
 					:helpText => "Did the patient pick up ART drug supply?" } %>
 
-
 			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),
 				{	:id => "arvs_supplied",
 					:multiple => false,
 				 	:condition => '$("picked_up_supply").value == "YES"',
-				 	:helpText => "Last ARV drugs taken" } %>
+				 	:helpText => "What were the ARV drugs that were taken?" } %>
 
 			<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
 				{	:id => "other_regimen",

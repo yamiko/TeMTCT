@@ -139,27 +139,31 @@
 </script>
 
 	<% if @patient_is_child_bearing_female %>
-
 		<form action="/encounters/create" method='post'>
 			<%= hidden_field_tag "encounter[encounter_type_name]", "PNC FOLLOWUP" %>
 			<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
-			<%= touch_yes_no_tag "SCHEDULED VISIT", @patient, nil,
-				{	:id => "picked_up_supply",
-					:helpText => "Was this a scheduled visit?" } %>
+			<%= touch_date_tag "APPOINTMENT DATE", @patient, nil,                   
+				{	:id => "next_appointment_date",                                               
+					:helpText => "What is the next appointment date?" } %>
 
 			<%= touch_yes_no_tag "CURRENTLY USING FAMILY PLANNING METHOD", @patient, nil,
 				{	:id => "on_fpm",
 					:helpText => "Currently using family planning method" } %>
 
-			<%= touch_select_tag "FAMILY PLANNING METHOD", @patient, options_for_select(@select_options['family_planning_methods']),
+			<%= touch_select_tag "FAMILY PLANNING METHOD", @patient, concept_set_options('FAMILY PLANNING METHOD'),
 				{	:id => "fpm_used",
 					:condition => '$("on_fpm").value == "YES"',
 					:multiple => true,
 					:tt_pageStyleClass => "NoKeyboard",
 					:helpText => "What method?" } %>
+
+			<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
+				{	:id => "other_regimen",
+					:condition => '$("fpm_used").value == "Other"',
+					:helpText => "Please specify the family planning method" } %>
 
 			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
 				{	:id => "refill_fpm",
@@ -180,13 +184,50 @@
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
-			<%= touch_yes_no_tag "SCHEDULED VISIT", @patient, nil,
-				{	:id => "picked_up_supply",
-					:helpText => "Was this a scheduled visit?" } %>
+			<%= touch_date_tag "APPOINTMENT DATE", @patient, nil,                   
+				{	:id => "next_appointment_date",                                               
+					:helpText => "What is the next appointment date?" } %>
 
-			<%= touch_yes_no_tag "CURRENTLY USING FAMILY PLANNING METHOD", @patient, nil,
-				{	:id => "on_fpm",
-					:helpText => "Currently using family planning method" } %>
+			<%= touch_select_tag "BREAST FEEDING", @patient, concept_set_options("BREAST FEEDING"),
+				{	:id => "breast_feeding",
+					:multiple => false,
+				 	:helpText => "Breast feeding" } %>
+
+			<%= touch_yes_no_tag "CPT GIVEN", @patient, nil,
+				{	:id => "cpt_given",
+				 	:helpText => "Was CPT given?" } %>
+
+			<%= touch_yes_no_tag "RAPID TEST DONE", @patient, nil,
+				{	:id => "sample_taken",
+				 	:helpText => "Was a rapid test sample taken at this visit?" } %>
+
+			<%= touch_select_tag "HIV TEST RESULT", @patient, concept_set_options('HIV TEST RESULT'),
+				{	:id => 'treatment_status',
+					:condition => '$("sample_taken").value == "YES"',
+					:multiple => false,
+					:helpText => "What was the test result?" } %>
+
+			<%= touch_select_tag "ART TREATMENT STATUS", @patient, concept_set_options('ART TREATMENT STATUS'),
+				{	:id => 'treatment_status',
+					:multiple => false,
+					:helpText => "What is the ART treatment status for the patient?" } %>
+
+			<%= touch_yes_no_na_tag "PICKED UP SUPPLY", @patient, nil,
+				{	:id => "picked_up_supply",
+				 	:condition => '$("treatment_status").value != "Alive not on ART"',
+					:helpText => "Were ARV drugs refilled at this visit?" } %>
+
+			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),
+				{	:id => "arvs_supplied",
+					:multiple => false,
+				 	:condition => '$("picked_up_supply").value == "YES"',
+				 	:helpText => "What were the ARV drugs that were taken?" } %>
+
+			<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
+				{	:id => "other_regimen",
+					:condition => '$("arvs_supplied").value == "Other"',
+					:helpText => "Please specify the regimen" } %>
+
 
 			<%= touch_select_tag "FAMILY PLANNING METHOD", @patient, options_for_select(@select_options['family_planning_methods']),
 				{	:id => "fpm_used",
