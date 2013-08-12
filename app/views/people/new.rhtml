@@ -117,22 +117,32 @@
 	<% if params[:identifier][5, 1] == 'M' %>
 		<%= hidden_field_tag 'person[gender]', 'Female' %>
 	<% else %
+		<%= hidden_field_tag 'person[dummy]', 'Male' %>
 		<%= hidden_field_tag 'person[gender]', 'Male' %>
 	<% end %>
 
 	<%= hidden_field_tag "person[names][middle_name]", "N/A" %>
 
-  <%= text_field_tag "person[birth_year]", nil, {:helpText => 'Year of Birth', :field_type => 'number', :absoluteMin => "1890", :min => "1940", :absoluteMax => Date.today.year, :tt_pageStyleClass => "Numeric NumbersOnly", :tt_onLoad => 'seen(tstCurrentPage);',:validationJS => "setDOB();" }  %>
+	<% if params[:identifier][5, 1] == 'M' %>
 
-  <%= select_tag "person[birth_month]", month_name_options, {
-	:helpText => 'Month of Birth', :condition => '$("person_birth_year").value.toLowerCase() != "unknown"',
-	:validationJS => "validateDOB();",:validationMessage => 'Please enter a valid date',
-	:tt_pageStyleClass => "NoKeyboard", :tt_onLoad => "__$('keyboard').style.display = 'none'"}%>
+		<%= text_field_tag "person[birth_year]", nil, {:helpText => 'Year of Birth', :field_type => 'number', :absoluteMin => "1890", :min => "1940", :absoluteMax => (Date.today.year - 11), :tt_pageStyleClass => "Numeric NumbersOnly", :tt_onLoad => 'seen(tstCurrentPage);',:validationJS => "setDOB();" }  %>
 
-  <%= text_field_tag "person[age_estimate]", nil, {:helpText => 'Age Estimate', :absoluteMin => 1, :absoluteMax => age_limit, :field_type => 'number', :condition => '$("person_birth_year").value == "Unknown"', :tt_onLoad => "$('nextButton').style.display = 'block';", :tt_pageStyleClass => "Numeric NumbersOnly"} %> 
+		<%= select_tag "person[birth_month]", month_name_options, {
+		:helpText => 'Month of Birth', :condition => '$("person_birth_year").value.toLowerCase() != "unknown"',
+		:validationJS => "validateDOB();",:validationMessage => 'Please enter a valid date',
+		:tt_pageStyleClass => "NoKeyboard", :tt_onLoad => "__$('keyboard').style.display = 'none'"}%>
 
-  <%= text_field_tag "person[birth_day]",  nil, :field_type => 'number', :helpText => 'Birth Day', :condition => '($("person_birth_year").value != "Unknown") && ($("person_birth_month").value != "Unknown")', :tt_onLoad => "getDayOfMonthPicker($('person_birth_year').value, $('person_birth_month').value);$('nextButton').style.display = 'block';" ,:validationJS => "validateDOB()",:validationMessage => 'Please enter a valid date'%>
+		<%= text_field_tag "person[age_estimate]", nil, {:helpText => 'Age Estimate', :absoluteMin => 1, :absoluteMax => age_limit, :field_type => 'number', :condition => '$("person_birth_year").value == "Unknown"', :tt_onLoad => "$('nextButton').style.display = 'block';", :tt_pageStyleClass => "Numeric NumbersOnly"} %> 
 
+		<%= text_field_tag "person[birth_day]",  nil, {:field_type => 'number', :helpText => 'Birth Day', :condition => '($("person_birth_year").value != "Unknown") && ($("person_birth_month").value != "Unknown")', :tt_onLoad => "getDayOfMonthPicker($('person_birth_year').value, $('person_birth_month').value);$('nextButton').style.display = 'block';" ,:validationJS => "validateDOB()",:validationMessage => 'Please enter a valid date'} %>
+	<% else %
+		<%= hidden_field_tag "person[dummy]", "2" %>
+		<%= hidden_field_tag "person[age_estimate]", "1" %>
+		<%= hidden_field_tag "person[birth_year]", "Unknown" %>
+		<%= hidden_field_tag "person[birth_month]", "" %>
+		<%= hidden_field_tag "person[birth_day]", "" %>
+
+	<% end %>
 
   <%= hidden_field_tag "person[addresses][address2]", "N/A" %>
 
