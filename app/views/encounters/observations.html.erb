@@ -6,6 +6,8 @@
 				display_obs = (h "#{obs.to_s(["short", "order"]).to_s.split(":")[0]}: #{Location.find(obs.to_s(["short", "order"]).to_s.split(":")[1].to_i).name}")
 			elsif  obs.concept_id == ConceptName.find_by_name("Location of ART initiation").concept_id
 				display_obs = (h "#{obs.to_s(["short", "order"]).to_s.split(":")[0]}: #{Location.find(obs.to_s(["short", "order"]).to_s.split(":")[1].to_i).name}")
+			elsif  obs.concept_id == ConceptName.find_by_name("Transfer in from").concept_id
+				display_obs = (h "#{obs.to_s(["short", "order"]).to_s.split(":")[0]}: #{Location.find(obs.to_s(["short", "order"]).to_s.split(":")[1].to_i).name}")
 			elsif  obs.concept_id == ConceptName.find_by_name("Referral clinic if referred").concept_id
 				display_obs = (h "#{obs.to_s(["short", "order"]).to_s.split(":")[0]}: #{Location.find(obs.to_s(["short", "order"]).to_s.split(":")[1].to_i).name}")
 			elsif obs.concept_id == ConceptName.find_by_name("Transfer to").concept_id
@@ -26,7 +28,7 @@
 				display_obs = (h obs.to_s(["short", "order"]))
 			end
 
-			display_obs = display_obs.gsub('hiv','HIV').gsub('Hiv','HIV')
+			display_obs = display_obs.gsub('hiv','HIV').gsub('Hiv','HIV').gsub('Art number','ART number')
 
 			if obs.to_s(["short", "order"]).upcase.include?("RETIRED")
 				display_obs = "<s>#{display_obs}</s>"

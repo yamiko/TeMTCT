@@ -21,11 +21,6 @@ helper_method :allowed_hiv_viewer
 		task.encounter_type = 'NONE'
 		task.url = "/patients/show/#{patient.id}"
 
-
-		if !encounter_available_ever(patient, 'TEMTCT REGISTRATION') 
-			task.encounter_type = 'TEMTCT REGISTRATION'
-			task.url = "/encounters/new/temtct_registration?patient_id=#{patient.id}"
-		end
 		return task
 	end
   

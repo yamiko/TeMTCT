@@ -40,7 +40,7 @@
             <% for encounter in @encounters.reverse do %>
                 <li class="data <%= cycle('even', 'odd') %>" encounter="<%= encounter.id %>">
                   <div class="void"><img src="/images/cancel_flat_red.png"/></div>
-                  <div class="encounter"><%=(h encounter.name.humanize).gsub('Art','ART').gsub('hiv','HIV').gsub('Tb','TB').gsub('Temtct','TeMTCT').gsub('Anc','ANC').gsub('Pnc','PNC').gsub('Dna pcr','DNA PCR') %> on <%=h encounter.encounter_datetime.strftime("%Y-%m-%d") %></div>
+                  <div class="encounter"><%=(h encounter.name.humanize).gsub('Art','ART').gsub('hiv','HIV').gsub('Tb','TB').gsub('Temtct','TeMTCT').gsub('Anc','ANC').gsub('Pnc','PNC').gsub('Dna pcr','DNA PCR') %> on <%=h encounter.encounter_datetime.strftime("%d/%b/%Y") %></div>
                 </li>
               <% end %>
             </ul>

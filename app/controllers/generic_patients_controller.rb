@@ -26,7 +26,7 @@ class GenericPatientsController < ApplicationController
 			@programs = restriction.filter_programs(@programs)
 		end
 
-		@date = (session[:datetime].to_date rescue Date.today).strftime("%Y-%m-%d")
+		@date = (session[:datetime].to_date rescue Date.today).strftime("%d/%b/%Y")
 
 		@location = Location.find(session[:location_id]).name rescue ""
 	
