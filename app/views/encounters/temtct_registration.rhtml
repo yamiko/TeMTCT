@@ -589,27 +589,27 @@
 			 	:condition => '$("sign_form").value == "YES" && $("transfer_in_patient").value == "YES"',
 			 	:helpText => "What was the location of previous ANC visit(s)?" } %>
 
+		<%= touch_date_tag "MOTHER HIV TEST DATE", @patient, nil,                   
+			{	:id => "confirmatory_hiv_test_date",                                               
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "Date of initial HIV+ diagnosis?" } %>
+
 		<%= touch_yes_no_tag "EVER RECEIVED ART", @patient, nil,
 			{	:id => "ever_received_art",
 			 	:condition => '$("sign_form").value == "YES"',
 			 	:helpText => "Has the participant ever received ARVs prior to enrolment?" } %>
 
-		<%= touch_date_tag "Date antiretrovirals started", @patient, nil,                   
-			{	:id => "date_started_art",                                               
-				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What is the date treatment was started prior to enrolment?" } %>
-
-		<%= touch_date_tag "CONFIRMATORY HIV TEST DATE", @patient, nil,                   
-			{	:id => "confirmatory_hiv_test_date",                                               
-				:condition => '$("sign_form").value == "YES"',
-				:helpText => "Date of initial HIV+ diagnosis?" } %>
-
 		<%= touch_text_field_tag "ART NUMBER", @patient, nil,
 			{	:id => "art_number",
-				:condition => '$("sign_form").value == "YES" && $("ever_received_art").value == "YES"',
+				:condition => '$("ever_received_art").value == "YES"',
 				:helpText => "Enter the participant's ART number",
 				:tt_pageStyleClass => "NoKeyboard", 
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
+
+		<%= touch_date_tag "Date antiretrovirals started", @patient, nil,                   
+			{	:id => "date_started_art",                                               
+				:condition => '$("ever_received_art").value == "YES"',
+				:helpText => "What is the date treatment was started prior to enrolment?" } %>
 
 		<%= hidden_field_tag "filter[provider]", nil %>
 		<%= submit_tag "Finish" %>    
