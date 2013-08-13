@@ -513,6 +513,7 @@
 
 		<%= touch_text_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
 			{	:id => "estimated_delivery_date", 
+				:condition => '$("sign_form").value == "YES"',
 				:field_type => "calendar",    
 				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
 				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
@@ -529,7 +530,7 @@
 				:field_type => 'number',
 				:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
 				:validationMessage => "You must enter a number",
-				:condition => '$("sign_form").value == "YES" && $("enroled_at_first_visit").value == "YES" ',
+				:condition => '$("sign_form").value == "YES"',
 				:helpText => "What is the gestation age(in weeks) at first ANC visit?",
 				:tt_pageStyleClass => "NoKeyboard", 
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
@@ -588,6 +589,17 @@
 			{	:id => "transfer_in_facility",
 			 	:condition => '$("sign_form").value == "YES" && $("transfer_in_patient").value == "YES"',
 			 	:helpText => "What was the location of previous ANC visit(s)?" } %>
+
+		<%= touch_text_field_tag "GESTATION WEEKS AT ENROLMENT", @patient, nil,
+			{	:id => "gestation_age_enrol",
+				:max => '50',
+				:field_type => 'number',
+				:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
+				:validationMessage => "You must enter a number",
+				:condition => '$("sign_form").value == "YES" && $("enroled_at_first_visit").value == "NO"',
+				:helpText => "What is the gestation age(in weeks) at enrolment?",
+				:tt_pageStyleClass => "NoKeyboard", 
+				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
 		<%= touch_date_tag "MOTHER HIV TEST DATE", @patient, nil,                   
 			{	:id => "confirmatory_hiv_test_date",                                               
