@@ -46,7 +46,6 @@ class PatientsController < GenericPatientsController
 		@diabetes_number = DiabetesService.diabetes_number(@patient)
 		@prescriptions = @patient.orders.unfinished.prescriptions.all
 		@programs = @patient.patient_programs.all
-		@alerts = alerts(@patient, session_date) rescue nil
 		@patient_is_child_bearing_female = is_child_bearing_female(@patient)
 
 		if !session[:location].blank?
@@ -93,23 +92,7 @@ class PatientsController < GenericPatientsController
 			@paediatrics  = true
 		end
 
-		if user_roles.include?("hmis lab order")
-			@hmis_lab_order  = true
-		end
 
-		if user_roles.include?("spine clinician")
-			@spine_clinician  = true
-		end
-
-		if user_roles.include?("lab")
-			@lab  = true
-		end
-
-		if ! allowed_hiv_viewer
-		@show_hiv_tab = false
-		else
-		@show_hiv_tab = true
-		end
 
 		@restricted = ProgramLocationRestriction.all(:conditions => {:location_id => Location.current_health_center.id })
 
@@ -124,12 +107,43 @@ class PatientsController < GenericPatientsController
 		@location = Location.find(session[:location_id]).name rescue ""
 
 		@task = main_next_task(Location.current_location,@patient,session_date)
-		@hiv_status = PatientService.patient_hiv_status(@patient)
-		@reason_for_art_eligibility = PatientService.reason_for_art_eligibility(@patient)
-		@arv_number = PatientService.get_patient_identifier(@patient, 'ARV Number')
 
 		render :template => 'patients/index', :layout => false
 	end
+
+
+	def overview
+		session_date = session[:datetime].to_date rescue Date.today
+
+		if allowed_hiv_viewer
+			@programs = @patient.patient_programs.all
+		else
+			#["name !=","HIV PROGRAM"]
+			@programs = PatientProgram.all(:conditions => ["patient_id = ? AND program_id != ?",@patient.id, hiv_program])
+		end
+
+		#@temtct_programs = @patient.patient_programs.not_completed.in_programs('TeMTCT PROGRAM')
+		current_state = PatientProgram.find(:first, :joins => :location, :conditions => ["patient_id = ? AND program_id = ? AND location.location_id = ? AND date_completed IS NULL", @patient.id, Program.find_by_concept_id(Concept.find_by_name('TeMTCT PROGRAM').id).id, Location.current_health_center]).patient_states.current.first.program_workflow_state.concept.fullname rescue ''		
+		
+		female_participant = is_child_bearing_female(@patient)
+
+		@alerts = []
+
+		if female_participant && current_state.empty?
+			@alerts << "Patient not enrolled or does not meet eligibility criteria"
+		end
+
+		# This code is pretty hacky at the moment
+		@restricted = ProgramLocationRestriction.all(:conditions => {:location_id => Location.current_health_center.id })
+		@restricted.each do |restriction|
+			@encounters = restriction.filter_encounters(@encounters)
+			@prescriptions = restriction.filter_orders(@prescriptions)
+			@programs = restriction.filter_programs(@programs)
+		end
+
+		render :template => 'dashboards/overview_tab', :layout => false
+	end
+
 
 	def personal
 		@links = []
