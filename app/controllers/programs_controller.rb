@@ -2,7 +2,6 @@ class ProgramsController < GenericProgramsController
   def update
     flash[:error] = nil
 	@session_date = session[:datetime].to_date rescue Date.today
-
     if request.method == :post
       patient_program = PatientProgram.find(params[:patient_program_id])
       #we don't want to have more than one open states - so we have to close the current active on before opening/creating a new one

@@ -832,4 +832,18 @@ class PatientsController < GenericPatientsController
   	patient_bean = PatientService.get_patient(patient.person)
     (patient_bean.sex == 'Female' && patient_bean.age >= 9 && patient_bean.age <= 45) ? true : false
   end
+
+  def programs_dashboard
+	@patient_bean = PatientService.get_patient(@patient.person)
+    @reason_for_art_eligibility = PatientService.reason_for_art_eligibility(@patient)
+	@date = (session[:datetime].to_date rescue Date.today).strftime("%d/%b/%Y")
+    
+    if ! allowed_hiv_viewer
+      @reason_for_art_eligibility = ""
+    end
+    
+    @arv_number = PatientService.get_patient_identifier(@patient, 'ARV Number')
+    render :template => 'dashboards/programs_dashboard', :layout => false
+  end
+
 end
