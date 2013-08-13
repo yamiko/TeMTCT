@@ -24,7 +24,11 @@
 			    <span id='patient_name'><%= "Participant" %></span>
 			    <span id='patient_id'><%= @patient_bean.national_id rescue "" %></span>
 			    <span id='patient_residence'><%= @patient_bean.current_residence rescue "" %></span>
-			    <span id='patient_age'><%= @patient_bean.age rescue "" %></span>
+				<% if !@patient_is_child_bearing_female %>
+			    	<span id='patient_age'><%= @patient_bean.age rescue "" %></span>
+				<% else %>
+			    	<span id='patient_age'><%= "N/A" %></span>
+				<% end %>
 			    <span id='patient_gender'><%= @patient_bean.sex rescue "" %></span>
 
 			    <div id="patient_card">
@@ -52,7 +56,9 @@
 					<select id="links">
 						<% if (session[:datetime].to_date rescue '') != '' %>
 							<option value='/encounters/new/temtct_registration?patient_id=<%= @patient.id -%>'>Register</option>
-							<option value='/encounters/new/anc_followup?patient_id=<%= @patient.id -%>'>ANC Followup</option>
+							<% if @patient_is_child_bearing_female %>
+								<option value='/encounters/new/anc_followup?patient_id=<%= @patient.id -%>'>ANC Followup</option>
+							<% end %>
 							<option value='/encounters/new/pnc_followup?patient_id=<%= @patient.id -%>'>PNC Followup</option>
 							<% if !@patient_is_child_bearing_female %>
 								<option value='/encounters/new/dna_pcr_test?patient_id=<%= @patient.id -%>'>DNA PCR Test</option>

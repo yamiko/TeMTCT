@@ -645,9 +645,9 @@
 
 		<%= touch_text_field_tag "NUMBER OF WEEKS ON TREATMENT", @patient, nil,
 			{	:id => "number_of_weeks",
-				:helpText => "Number of weeks taken (Adherence)" } %>
+				:helpText => "Baby ARV adherence - # of weeks taken" } %>
 
-		<%= touch_select_tag "DELIVERY LOCATION", @patient, options_for_select([['', ''], ['Home', 'HOME'], ['Clinic', 'CLINIC']]),
+		<%= touch_select_tag "DELIVERY LOCATION", @patient, options_for_select([['', ''], ['Home', 'HOME'], ['Facility', 'FACILITY']]),
 			{	:id => "delivery_location",
 				:multiple => false,
 			 	:helpText => "Delivery location" } %>
