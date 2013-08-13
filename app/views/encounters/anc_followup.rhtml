@@ -160,6 +160,8 @@
 			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),
 				{	:id => "arvs_supplied",
 					:multiple => false,
+					:tt_pageStyleClass => "NoKeyboard",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 				 	:condition => '$("picked_up_supply").value == "YES"',
 				 	:helpText => "What were the ARV drugs that were taken?" } %>
 

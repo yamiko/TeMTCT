@@ -594,21 +594,22 @@
 				:condition => '$("sign_form").value == "YES"',
 				:helpText => "Date of initial HIV+ diagnosis?" } %>
 
-		<%= touch_yes_no_tag "EVER RECEIVED ART", @patient, nil,
-			{	:id => "ever_received_art",
-			 	:condition => '$("sign_form").value == "YES"',
-			 	:helpText => "Has the participant ever received ARVs prior to enrolment?" } %>
+		<%= touch_select_tag "EVER RECEIVED ART", @patient, concept_set_options('EVER RECEIVED ART'),
+			{	:id => 'ever_received_art',
+				:multiple => false,
+				:condition => '$("sign_form").value == "YES"',
+				:helpText => "Has the participant ever received ARVs prior to enrolment?" } %>
 
 		<%= touch_text_field_tag "ART NUMBER", @patient, nil,
 			{	:id => "art_number",
-				:condition => '$("ever_received_art").value == "YES"',
+				:condition => '$("ever_received_art").value == "Yes, on ART prior to study enrolment"',
 				:helpText => "Enter the participant's ART number",
 				:tt_pageStyleClass => "NoKeyboard", 
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
 		<%= touch_date_tag "Date antiretrovirals started", @patient, nil,                   
 			{	:id => "date_started_art",                                               
-				:condition => '$("ever_received_art").value == "YES"',
+				:condition => '$("ever_received_art").value == "Yes, on ART prior to study enrolment"',
 				:helpText => "What is the date treatment was started prior to enrolment?" } %>
 
 		<%= hidden_field_tag "filter[provider]", nil %>

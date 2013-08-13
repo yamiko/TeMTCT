@@ -1103,30 +1103,36 @@ class EncountersController < GenericEncountersController
   # Generate a given list of Regimen+s for the given +Patient+ <tt>weight</tt>
   # into select options. 
 	def temtct_regimen_options
-		weight = 13
+		weight = 5
+
 		if @patient_is_child_bearing_female
 			weight = 60
 		end
 		
-
 		my_drugs = temtct_arv_drugs.map { |t| t.concept_id }
 
+		regimens = nil
 
-		regimens = Regimen.find(	:all,
-									:order => 'regimen_index',
-									:conditions => ['? >= min_weight AND ? < max_weight AND concept_id IN (?)', weight, weight, my_drugs])
-		
+		if weight == 5
+			regimens = Regimen.find(	:all,
+										:order => 'regimen_index',
+										:conditions => ['((? >= min_weight AND ? < max_weight) OR (15 >= min_weight AND 15 < max_weight)) AND concept_id IN (?)', weight, weight, my_drugs])
+		else
+			regimens = Regimen.find(	:all,
+										:order => 'regimen_index',
+										:conditions => ['? >= min_weight AND ? < max_weight AND concept_id IN (?)', weight, weight, my_drugs])
+		end
 		
 		options = regimens.map { |r|
 			concept_name = (r.concept.concept_names.typed("SHORT").first ||	r.concept.concept_names.typed("FULLY_SPECIFIED").first).name
 			if r.regimen_index.blank?
 				["#{concept_name}","#{concept_name}"]
 			else
-				if @patient_is_child_bearing_female
-					["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
-				else
-					["#{r.regimen_index}P - #{concept_name}", "#{r.regimen_index}P - #{concept_name}"]
-				end
+				#if @patient_is_child_bearing_female
+				#	["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
+				#else
+				["#{r.regimen_index} - #{concept_name}", "#{r.regimen_index}P - #{concept_name}"]
+				#end
 			end
 		}.sort_by{| r | r[0]}.uniq
 
