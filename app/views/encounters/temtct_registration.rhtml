@@ -602,7 +602,7 @@
 		<%= touch_date_tag "CONFIRMATORY HIV TEST DATE", @patient, nil,                   
 			{	:id => "confirmatory_hiv_test_date",                                               
 				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What is the confirmatory HIV test date for the participant?" } %>
+				:helpText => "Date of initial HIV+ diagnosis?" } %>
 
 		<%= touch_text_field_tag "ART NUMBER", @patient, nil,
 			{	:id => "art_number",

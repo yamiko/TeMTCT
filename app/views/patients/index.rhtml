@@ -24,7 +24,7 @@
 			    <span id='patient_name'><%= "Participant" %></span>
 			    <span id='patient_id'><%= @patient_bean.national_id rescue "" %></span>
 			    <span id='patient_residence'><%= @patient_bean.current_residence rescue "" %></span>
-				<% if !@patient_is_child_bearing_female %>
+				<% if @patient_is_child_bearing_female %>
 			    	<span id='patient_age'><%= @patient_bean.age rescue "" %></span>
 				<% else %>
 			    	<span id='patient_age'><%= "N/A" %></span>
