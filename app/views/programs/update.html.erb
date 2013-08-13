@@ -159,32 +159,32 @@
 	}
 </script>
 <form id='program' action="/programs/update" method = 'post'>
-  <%= hidden_field_tag :patient_id, @patient.id %>
-  <%= hidden_field_tag :patient_program_id, @patient_program_id %>
-  <%= hidden_field_tag :location_id, Location.current_health_center.id %>
+	<%= hidden_field_tag :patient_id, @patient.id %>
+	<%= hidden_field_tag :patient_program_id, @patient_program_id %>
+	<%= hidden_field_tag :location_id, Location.current_health_center.id %>
 
-  <%= select_tag 'current_state', params[:current_state],
-      {:id => 'initial_state',
-       :field_type => 'alpha',
-       :helpText => "New outcome",
-       :tt_onLoad => "resetNextButtonCaption();set_workflow_for_states();", 
-       :ajaxURL => "",
-       :validationJS =>"validProgram()",
-       :validationMessage => "#{@program_name}<br/>is closed<br/>Closed on: #{@program_date_completed}",
-       :tt_pageStyleClass => "NoKeyboard",
-       :allowFreeText => false } %>
+	<%= select_tag 'current_state', params[:current_state],
+		{	:id => 'initial_state',
+			:field_type => 'alpha',
+			:helpText => "New outcome",
+			:tt_onLoad => "resetNextButtonCaption();set_workflow_for_states();", 
+			:ajaxURL => "",
+			:validationJS =>"validProgram()",
+			:validationMessage => "#{@program_name}<br/>is closed<br/>Closed on: #{@program_date_completed}",
+			:tt_pageStyleClass => "NoKeyboard",
+			:allowFreeText => false } %>
 
-  <% initial_date = "#{session[:datetime].strftime('%Y-%m-%d')}" rescue "#{(Date.today).strftime('%Y-%m-%d')}"%>
+	<% initial_date = "#{session[:datetime].strftime('%Y-%m-%d')}" rescue "#{(Date.today).strftime('%Y-%m-%d')}"%>
 
-  <%= text_field_tag 'current_date', initial_date,
-        {:id => 'current_date',
-         :field_type => 'date',
-         :tt_onLoad => "changeNextButtonCaption()",
-         :helpText => "New outcome start date",
-         :max => "#{(Date.today).strftime('%Y-%m-%d')}",
-         :validationJS =>"validStartDate()",
-         :validationMessage => "Start date is overlapping with other states start dates",
-         :tt_pageStyleClass => "Date DatesOnly"} %>
+	<%= text_field_tag 'current_date', initial_date,
+		{	:id => 'current_date',
+			:field_type => 'date',
+			:tt_onLoad => "changeNextButtonCaption()",
+			:helpText => "New outcome start date",
+			:max => "#{(Date.today).strftime('%Y-%m-%d')}",
+			:validationJS =>"validStartDate()",
+			:validationMessage => "Start date is overlapping with other states start dates",
+			:tt_pageStyleClass => "Date DatesOnly"} %>
 
   <script>
     function resetNextButtonCaption(){
@@ -208,42 +208,51 @@
     }
   </script>
 
-	<%= touch_select_tag "Reason for exiting care", @patient, concept_set_options("Place of Death"),
-		{
-			:id => "place_of_death",
+	<%= touch_select_tag "Reason for exiting TeMTCT program", @patient, concept_set_options('Reason for exiting TeMTCT program'),
+		{	:id => 'termination_reason',
 			:multiple => false,
-    	:condition => "(selectedValue('initial_state').toUpperCase() == 'PATIENT DIED')",
-    	:tt_onLoad => "changeNextButtonCaption();setFinishButtonToSubmitExitFromCareForm()",
-			:helpText => 'Place where death occured'
-		} %>
+			:tt_pageStyleClass => "NoKeyboard", 
+			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:helpText => "Reason for termination" } %>
 
-  <%= select_tag 'transfer_out_location_id', nil,
-      {:id => 'transfer_out_location_id',
-       :field_type => 'alpha',
-       :helpText => "Referral out facility",
-       :ajaxURL => '/programs/locations?q=',
-       :tt_onLoad => "changeNextButtonText();",
-       :condition => "current_state_input_box.value.toUpperCase() == 'REFERRED TO ANOTHER FACILITY'",
-       :allowFreeText => true } %>
+	<%= touch_yes_no_tag "DATE OF DEATH KNOWN", @patient, nil,
+		{	:id => "date_known",
+			:condition => '$("termination_reason").value == "Death of mother"',
+		 	:helpText => "Is the date of death known?" } %>
 
-  <%= select_tag 'transfer_out_location_id', nil,
-      {:id => 'transfer_out_location_id',
-       :field_type => 'alpha',
-       :helpText => "Transfer out to location",
-       :ajaxURL => '/programs/locations?q=',
-       :condition => "current_state_input_box.value.toUpperCase() == 'PATIENT TRANSFERRED OUT'",
-       :allowFreeText => true } %>
-       
-  <%= touch_yes_no_unknown_tag "TRANSFER WITHIN RESPONSIBILITY", @patient, nil,
-      {:id => "transfer_within_responsibility",
-       :optional => false,
-       :condition => "current_state_input_box.value.toUpperCase() == 'PATIENT TRANSFERRED OUT'",
-       :helpText => "Transfer within responsibility (e.g. District)" } %>
+	<%= touch_text_field_tag "DATE OF DEATH", @patient, nil,                   
+		{	:id => "death_date", 
+			:condition => '$("date_known").value == "YES"',
+			:field_type => "calendar",    
+			:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
+			:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
+			:startweekdate => (@session_date - 7.days),
+			:value => @session_date,
+			:endweekdate => (@session_date + 365.days),
+			:tt_onLoad => "showCategory('Date of death'); __$('category').style.opacity = 0.75;",
+			:ajaxCalendarUrl => "",                                          
+			:helpText => "" } %>
 
+	<%= touch_yes_no_tag "CAUSE OF DEATH KNOWN", @patient, nil,
+		{	:id => "cause_known",
+			:condition => '$("termination_reason").value == "Death of mother"',
+		 	:helpText => "Is the date of death known?" } %>
 
-  <%= hidden_field_tag "encounter[encounter_type_name]", "TRANSFER OUT" %>
-  <%= hidden_field_tag "encounter[patient_id]", @patient.id %>
-  <%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
-  <%= hidden_field_tag "encounter[provider_id]", current_user.person_id %>
+	<%= touch_text_field_tag "CAUSE OF DEATH", @patient, nil,
+		{	:id => "cause_of_death",
+			:condition => '$("cause_known").value == "YES"',
+			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:helpText => "Cause of death" } %>
+
+	<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
+		{	:id => "other_reason",
+			:condition => '$("termination_reason").value == "Other" || $("termination_reason").value == "Investigator decision" || $("termination_reason").value == "Participant refused further participation"',
+			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:helpText => "Please specify" } %>
+
+	<%= hidden_field_tag "encounter[encounter_type_name]", "EXIT FROM PROGRAM" %>
+	<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
+	<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
+	<%= hidden_field_tag "encounter[provider_id]", current_user.person_id %>
 </form>
 

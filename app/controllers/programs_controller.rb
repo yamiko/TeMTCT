@@ -1,6 +1,7 @@
 class ProgramsController < GenericProgramsController
   def update
     flash[:error] = nil
+	@session_date = session[:datetime].to_date rescue Date.today
 
     if request.method == :post
       patient_program = PatientProgram.find(params[:patient_program_id])
@@ -19,33 +20,34 @@ class ProgramsController < GenericProgramsController
 		    # Close and save current_active_state if a new state has been created
 		   current_active_state.save
 
-        if patient_state.program_workflow_state.concept.fullname.upcase == 'PATIENT TRANSFERRED OUT' ||
-        	 patient_state.program_workflow_state.concept.fullname.upcase == 'REFERRED TO ANOTHER FACILITY'
-          encounter = Encounter.new(params[:encounter])
-          encounter.encounter_datetime = session[:datetime] unless session[:datetime].blank?
-          encounter.save
+			if patient_state.program_workflow_state.concept.fullname.upcase == 'EXIT PROGRAM'
+				encounter = Encounter.new(params[:encounter])
+				encounter.encounter_datetime = session[:datetime] unless session[:datetime].blank?
+				encounter.save
 
-          (params[:observations] || [] ).each do |observation|
-            #for now i do this
-            obs = {}
-            obs[:concept_name] = observation[:concept_name] 
-            obs[:value_coded_or_text] = observation[:value_coded_or_text] 
-            obs[:encounter_id] = encounter.id
-            obs[:obs_datetime] = encounter.encounter_datetime || Time.now()
-            obs[:person_id] ||= encounter.patient_id  
-            Observation.create(obs)
-          end
+				(params[:observations] || [] ).each do |observation|
+				#for now i do this
+					obs = {}
+					obs[:concept_name] = observation[:concept_name] 
+					obs[:value_coded_or_text] = observation[:value_coded_or_text] 
+					obs[:value_text] = observation[:value_text] if observation[:value_text] 
+					obs[:encounter_id] = encounter.id
+					obs[:obs_datetime] = encounter.encounter_datetime || Time.now()
+					obs[:person_id] ||= encounter.patient_id  
+					Observation.create(obs)
+				end
 
-          observation = {} 
-          observation[:concept_name] = 'TRANSFER OUT TO'
-          observation[:encounter_id] = encounter.id
-          observation[:obs_datetime] = encounter.encounter_datetime || Time.now()
-          observation[:person_id] ||= encounter.patient_id
-          observation[:value_text] = params[:transfer_out_location_id]
-          Observation.create(observation)
-        end  
+=begin          observation = {} 
+observation[:concept_name] = 'TRANSFER OUT TO'
+observation[:encounter_id] = encounter.id
+observation[:obs_datetime] = encounter.encounter_datetime || Time.now()
+observation[:person_id] ||= encounter.patient_id
+observation[:value_text] = params[:transfer_out_location_id]
+Observation.create(observation)
+=end
+			end  
 
-        updated_state = patient_state.program_workflow_state.concept.fullname
+	        updated_state = patient_state.program_workflow_state.concept.fullname
 
 		#disabled redirection during import in the code below
 		# Changed the terminal state conditions from hardcoded ones to terminal indicator from the updated state object
@@ -96,17 +98,20 @@ class ProgramsController < GenericProgramsController
           PatientProgram.update_all "date_completed = NULL",
                                      "patient_program_id = #{patient_program.patient_program_id}"
         end
+
+		session[:datetime] = nil
         #for import
          unless params[:location]
-            redirect_to :controller => :patients, :action => :programs_dashboard, :patient_id => params[:patient_id]
+            redirect_to :controller => :patients, :action => :show, :patient_id => params[:patient_id]
          else
             render :text => "import suceeded" and return
          end
         
       else
+		session[:datetime] = nil
         #for import
         unless params[:location]
-          redirect_to :controller => :patients, :action => :programs_dashboard, :patient_id => params[:patient_id],:error => "Unable to update state"
+          redirect_to :controller => :patients, :action => :show, :patient_id => params[:patient_id],:error => "Unable to update state"
         else
             render :text => "import suceeded" and return
         end
