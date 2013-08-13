@@ -22,7 +22,7 @@
 					</div>
 			    </div>
 			    <span id='patient_name'><%= "Participant" %></span>
-			    <span id='patient_id'><%= @patient_bean.national_id_with_dashes rescue "" %></span>
+			    <span id='patient_id'><%= @patient_bean.national_id rescue "" %></span>
 			    <span id='patient_residence'><%= @patient_bean.current_residence rescue "" %></span>
 			    <span id='patient_age'><%= @patient_bean.age rescue "" %></span>
 			    <span id='patient_gender'><%= @patient_bean.sex rescue "" %></span>

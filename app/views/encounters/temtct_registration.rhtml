@@ -511,10 +511,17 @@
 				:tt_pageStyleClass => "NoKeyboard", 
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
-		<%= touch_date_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
-			{	:id => "estimated_delivery_date",                                               
-				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What is the estimated delivery date at enrolment?" } %>
+		<%= touch_text_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
+			{	:id => "estimated_delivery_date", 
+				:field_type => "calendar",    
+				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
+				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
+				:startweekdate => (@session_date - 7.days),
+				:value => @session_date,
+				:endweekdate => (@session_date + 365.days),
+				:tt_onLoad => "showCategory('Est. delivery date'); __$('category').style.opacity = 0.75;",
+				:ajaxCalendarUrl => "",                                          
+				:helpText => "" } %>
 
 		<%= touch_text_field_tag "GESTATION WEEKS", @patient, nil,
 			{	:id => "gestation_age",
@@ -542,7 +549,7 @@
 			{	:id => 'marital_status',
 				:multiple => false,
 				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What is the marital status for the patient?" } %>
+				:helpText => "What is the marital status for the participant?" } %>
 
 		<%= touch_select_tag "HIGHEST LEVEL OF SCHOOL COMPLETED", @patient, concept_set_options('HIGHEST LEVEL OF SCHOOL COMPLETED'),
 			{	:id => 'education_level',
@@ -554,23 +561,28 @@
 			{	:id => 'distance',
 				:multiple => false,
 				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What is the distance between home and health center for the patient?" } %>
+				:helpText => "What is the distance between home and health center?" } %>
 
 		<%= touch_select_tag "MODE OF TRANSPORT", @patient, concept_set_options('MODE OF TRANSPORT'),
 			{	:id => 'transport',
 				:multiple => false,
 				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What mode of transport did the patient use to get to the health center?" } %>
+				:helpText => "What mode of transport did the participant use to get to the health center?" } %>
+
+		<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
+			{	:id => "other_transport",
+				:condition => '$("transport").value == "Other"',
+				:helpText => "Please specify the mode of transport" } %>
 
 		<%= touch_yes_no_tag "ENROLLED AT FIRST ANC VISIT", @patient, nil,
 			{	:id => "enroled_at_first_visit",
 			 	:condition => '$("sign_form").value == "YES"',
-			 	:helpText => "Was the patient enrolled at first ANC visit?" } %>
+			 	:helpText => "Was the participant enrolled at first ANC visit?" } %>
 
 		<%= touch_yes_no_tag "PATIENT TRANSFERRED IN", @patient, nil,
 			{	:id => "transfer_in_patient",
 			 	:condition => '$("sign_form").value == "YES" && $("enroled_at_first_visit").value == "NO"',
-			 	:helpText => "Was the patient a transfer in at enrolment?" } %>
+			 	:helpText => "Was the participant a transfer in at enrolment?" } %>
 
 		<%= touch_location_tag "TRANSFER IN FROM", @patient, nil,
 			{	:id => "transfer_in_facility",
@@ -580,7 +592,7 @@
 		<%= touch_yes_no_tag "EVER RECEIVED ART", @patient, nil,
 			{	:id => "ever_received_art",
 			 	:condition => '$("sign_form").value == "YES"',
-			 	:helpText => "Has the patient ever received ARVs prior to enrolment?" } %>
+			 	:helpText => "Has the participant ever received ARVs prior to enrolment?" } %>
 
 		<%= touch_date_tag "Date antiretrovirals started", @patient, nil,                   
 			{	:id => "date_started_art",                                               
@@ -590,12 +602,12 @@
 		<%= touch_date_tag "CONFIRMATORY HIV TEST DATE", @patient, nil,                   
 			{	:id => "confirmatory_hiv_test_date",                                               
 				:condition => '$("sign_form").value == "YES"',
-				:helpText => "What is the confirmatory HIV test date for the patient?" } %>
+				:helpText => "What is the confirmatory HIV test date for the participant?" } %>
 
 		<%= touch_text_field_tag "ART NUMBER", @patient, nil,
 			{	:id => "art_number",
 				:condition => '$("sign_form").value == "YES" && $("ever_received_art").value == "YES"',
-				:helpText => "Enter the patient's ART number",
+				:helpText => "Enter the participant's ART number",
 				:tt_pageStyleClass => "NoKeyboard", 
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 

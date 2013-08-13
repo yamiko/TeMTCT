@@ -1103,7 +1103,7 @@ class EncountersController < GenericEncountersController
   # Generate a given list of Regimen+s for the given +Patient+ <tt>weight</tt>
   # into select options. 
 	def temtct_regimen_options
-		weight = 23
+		weight = 13
 		if @patient_is_child_bearing_female
 			weight = 60
 		end
