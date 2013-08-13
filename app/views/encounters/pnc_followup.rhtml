@@ -166,9 +166,9 @@
 					:helpText => "What method?" } %>
 
 			<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
-				{	:id => "other_regimen",
-					:condition => '$("fpm_used").value == "Other"',
-					:helpText => "Please specify the family planning method" } %>
+				{	:id => "other_fpm",
+					:condition => '$("touchscreenInput2").value.match(/Other/g) != null',
+					:helpText => "Please specify the other family planning method" } %>
 
 			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
 				{	:id => "refill_fpm",
