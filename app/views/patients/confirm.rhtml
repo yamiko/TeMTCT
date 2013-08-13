@@ -34,14 +34,11 @@
 			    </div>
 
 			    <select id="tabs">
-					<option value='/patients/overview?patient_id=<%= @patient.id %>'>Overview</option>
-					<option value='/patients/visit_history?patient_id=<%= @patient.id %>'>Today</option>
-					<option value='/patients/past_visits_summary?patient_id=<%= @patient.id %>'>History</option>
+					<option value='/patients/confirm_tab?patient_id=<%= @patient.id %>'>Confirm</option>
 				</select>
 					
 				<% if @patient.person.dead == 1%>
 					<select id="links">
-						<option value='/patients/programs_dashboard/<%= @patient.id -%>'>Outcomes</option>
 					</select>
 					<select id="navigation_links">
 						<option link='<%= ((session[:datetime].to_date rescue '') != '' ?
@@ -50,25 +47,12 @@
 					</select>
 				<% else %>
 					<select id="links">
-						<% if (session[:datetime].to_date rescue '') != '' %>
-							<option value='/encounters/new/temtct_registration?patient_id=<%= @patient.id -%>'>Register</option>
-							<option value='/encounters/new/anc_followup?patient_id=<%= @patient.id -%>'>ANC Followup</option>
-							<option value='/encounters/new/pnc_followup?patient_id=<%= @patient.id -%>'>PNC Followup</option>
-							<% if !@patient_is_child_bearing_female %>
-								<option value='/encounters/new/dna_pcr_test?patient_id=<%= @patient.id -%>'>DNA PCR Test</option>
-							<% end %>
-						<% end %>
 					</select>
 			
 					<select id="navigation_links">
 						<% if (session[:datetime].to_date rescue '') != '' %>
 							<option link="/encounter_types?patient_id=<%= @patient.id -%>" ttSize = "160px">Tasks</option>
 						<% end %>
-						<option link='<%= ((session[:datetime].to_date rescue '') != '' ?
-						"/people/reset_datetime/#{@patient.id}" : "/people/set_datetime/#{@patient.id}") %>'  ttSize="160px">
-						<%= ((session[:datetime].to_date rescue '') != '' ? "Reset Date" : "Set Date") %></option>
-						<option link='/patients/programs_dashboard/<%= @patient.id %>'>Update Outcome</option>
-						<!--option link='/patients/confirm/<%= @patient.id %>'>Rekey</option-->
 					</select>
 				<% end %>
 			</form>

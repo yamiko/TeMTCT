@@ -1,42 +1,41 @@
 class PatientsController < GenericPatientsController
 
-	def tab_social_history
-		@alcohol = nil
-		@smoke = nil
-		@nutrition = nil
+	def confirm
+		@patient_bean = PatientService.get_patient(@patient.person)
+		render :template => 'patients/confirm', :layout => false
+	end
 
-		@patient = Patient.find(params[:patient_id]  || params[:id] || session[:patient_id]) rescue nil
+	def confirm_tab
+		session[:mastercard_ids] = []
+		session_date = session[:datetime].to_date rescue Date.today
+		start_date = session_date.strftime('%Y-%m-%d 00:00:00')
+		end_date = session_date.strftime('%Y-%m-%d 23:59:59')
 
-		@alcohol = Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			@patient.id, Encounter.find(:all, :conditions => ["patient_id = ?", @patient.id]).collect{|e| e.encounter_id},
-			ConceptName.find_by_name('Patient currently consumes alcohol').concept_id]).answer_string rescue nil
+		rekeyed_concept_id = ConceptName.find_by_name('Rekeyed').concept_id
+		confirmed_encounters = Observation.find(:all, 	:conditions => ["person_id = ? AND concept_id = ?", @patient.id, rekeyed_concept_id]).map { |t| t.encounter_id }
 
-		@smokes = Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			@patient.id, Encounter.find(:all, :conditions => ["patient_id = ?", @patient.id]).collect{|e| e.encounter_id},
-			ConceptName.find_by_name('Patient currently smokes').concept_id]).answer_string rescue nil
+		if confirmed_encounters.empty? 
+			confirmed_encounters = [0]
+		end
+		
+		@encounters = Encounter.find(:all, 	:conditions => [" patient_id = ? AND encounter_id NOT IN (?)", @patient.id, confirmed_encounters])
 
-		@nutrition = Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			@patient.id, Encounter.find(:all, :conditions => ["patient_id = ?", @patient.id]).collect{|e| e.encounter_id},
-			ConceptName.find_by_name('Nutrition status').concept_id]).answer_string rescue nil
+		@creator_name = {}
+		@encounters.each do |encounter|
+		id = encounter.creator
+			user_name = User.find(id).person.names.first
+			@creator_name[id] = '(' + user_name.given_name.first + '. ' + user_name.family_name + ')'
+		end
 
-		@civil = Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			@patient.id, Encounter.find(:all, :conditions => ["patient_id = ?", @patient.id]).collect{|e| e.encounter_id},
-			ConceptName.find_by_name('Civil status').concept_id]).answer_string.titleize rescue nil
+		# This code is pretty hacky at the moment
+		@restricted = ProgramLocationRestriction.all(:conditions => {:location_id => Location.current_health_center.id })
+		@restricted.each do |restriction|
+		@encounters = restriction.filter_encounters(@encounters)
+		@prescriptions = restriction.filter_orders(@prescriptions)
+		@programs = restriction.filter_programs(@programs)
+		end
 
-		@civil_other = (Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			  @patient.id, Encounter.find(:all, :conditions => ["patient_id = ?", @patient.id]).collect{|e| e.encounter_id},
-			  ConceptName.find_by_name('Other Civil Status Comment').concept_id]).answer_string rescue nil) if @civil == "Other"
-
-		@religion = Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			@patient.id, Encounter.find(:all, :conditions => ["patient_id = ?", @patient.id]).collect{|e| e.encounter_id},
-			ConceptName.find_by_name('Religion').concept_id]).answer_string.titleize rescue nil
-
-		@religion_other = (Observation.find(:last, :conditions => ["person_id = ? AND encounter_id IN (?) AND concept_id = ?",
-			  @patient.id, Encounter.find(:all, :conditions => ["patient_id = ? AND encounter_type = ?", 
-				  @patient.id, EncounterType.find_by_name("SOCIAL HISTORY").id]).collect{|e| e.encounter_id},
-			  ConceptName.find_by_name('Other').concept_id]).answer_string rescue nil) if @religion == "Other"
-
-		render :layout => false
+		render :template => 'patients/confirm_tab', :layout => false
 	end
   
 	def show
@@ -48,6 +47,7 @@ class PatientsController < GenericPatientsController
 		@prescriptions = @patient.orders.unfinished.prescriptions.all
 		@programs = @patient.patient_programs.all
 		@alerts = alerts(@patient, session_date) rescue nil
+		@patient_is_child_bearing_female = is_child_bearing_female(@patient)
 
 		if !session[:location].blank?
 			session["category"] = (session[:location] == "Paeds A and E" ? "paeds" : "adults")
@@ -774,5 +774,48 @@ class PatientsController < GenericPatientsController
           ConceptName.find_by_name('Other').concept_id]).answer_string rescue nil) if @religion == "Other"
   
     render :layout => false
+  end
+
+  def visit_history
+    session[:mastercard_ids] = []
+    session_date = Date.today
+  	start_date = session_date.strftime('%Y-%m-%d 00:00:00')
+  	end_date = session_date.strftime('%Y-%m-%d 23:59:59')
+    @encounters = Encounter.find(:all, 	:conditions => [" patient_id = ? AND date_created >= ? AND date_created <= ?", @patient.id, start_date, end_date])
+    
+    if ! allowed_hiv_viewer
+      @encounters = remove_art_encounters(@encounters, 'encounter')
+    end
+    
+    @creator_name = {}
+    @encounters.each do |encounter|
+    	id = encounter.creator
+			user_name = User.find(id).person.names.first
+			@creator_name[id] = '(' + user_name.given_name.first + '. ' + user_name.family_name + ')'
+    end
+    
+    @prescriptions = @patient.orders.unfinished.prescriptions.all
+    #@programs = @patient.patient_programs.all
+    if allowed_hiv_viewer
+       @programs = @patient.patient_programs.all
+     else
+     #["name !=","HIV PROGRAM"]
+        @programs = PatientProgram.all(:conditions => ["patient_id = ? AND program_id != ?",@patient.id, hiv_program])
+     end
+    @alerts = alerts(@patient, session_date) rescue nil
+    # This code is pretty hacky at the moment
+    @restricted = ProgramLocationRestriction.all(:conditions => {:location_id => Location.current_health_center.id })
+    @restricted.each do |restriction|
+    @encounters = restriction.filter_encounters(@encounters)
+    @prescriptions = restriction.filter_orders(@prescriptions)
+    @programs = restriction.filter_programs(@programs)
+    end
+
+    render :template => 'dashboards/visit_history_tab', :layout => false
+  end
+
+  def is_child_bearing_female(patient)
+  	patient_bean = PatientService.get_patient(patient.person)
+    (patient_bean.sex == 'Female' && patient_bean.age >= 9 && patient_bean.age <= 45) ? true : false
   end
 end

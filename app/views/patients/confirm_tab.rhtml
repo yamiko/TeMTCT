@@ -10,8 +10,22 @@
   }
 
   function voiding(node) {
-    confirmYesNo("Void this item?", function() {
-      hideConfirmation();
+    confirmYesNo("Rekey this encounter?", function() {
+		hideConfirmation();
+		window.parent.location = '/patients/confirm/15';
+      /*$.post('/encounters/void/' + node.parent().attr('encounter'), {}, function(data, status) {
+        if (status == 'success') {
+          document.getElementById('observations').innerHTML = '';
+          node.parent().remove();
+        }
+      })*/
+    }, function() { hideConfirmation(); });
+  }
+
+  function rekey(node) {
+    confirmYesNo("Rekey this encounter?", function() {
+		hideConfirmation();
+		window.location = '/patients/confirm/15';
       $.post('/encounters/void/' + node.parent().attr('encounter'), {}, function(data, status) {
         if (status == 'success') {
           document.getElementById('observations').innerHTML = '';
@@ -24,14 +38,13 @@
   jQuery(document).ready(function($) {
     $('#encounters li.data').click(function() { select($(this)); });
     $('#encounters li.data div.void').click(function() { voiding($(this)); return false; });
-    $('#charts').empty().load('/patients/graph/<%= @patient.id -%>?data=weight');
     recent = $('#encounters li.data:first');
     if (recent) select(recent);
   })
 </script>
   <div id="encounters" style="border: 1px solid #eee; padding: 10px">
     <% current_day = session[:datetime].strftime('%Y-%m-%d') rescue 'Today'%>
-    <h2 style="margin: 0px;">Today's summary</h2>
+    <h2 style="margin: 0px;">Unconfirmed encounters</h2>
     
     <div  style="display: table; width: 99%;">
       <div  style="display: table-row;">
@@ -39,7 +52,7 @@
           <ul class="list" style="clear:both; height: 230px; border-radius: 15px;">
             <% for encounter in @encounters.reverse do %>
                 <li class="data <%= cycle('even', 'odd') %>" encounter="<%= encounter.id %>">
-                  <div class="void"><img src="/images/cancel_flat_red.png"/></div>
+                  <div class="void"><img src="/images/ticked.jpg"/></div>
                   <div class="encounter"><%=(h encounter.name.humanize).gsub('Art','ART').gsub('hiv','HIV').gsub('Tb','TB').gsub('Temtct','TeMTCT').gsub('Anc','ANC').gsub('Pnc','PNC').gsub('Dna pcr','DNA PCR') %> on <%=h encounter.encounter_datetime.strftime("%d/%b/%Y") %></div>
                 </li>
               <% end %>

@@ -228,22 +228,6 @@
 					:condition => '$("arvs_supplied").value == "Other"',
 					:helpText => "Please specify the regimen" } %>
 
-
-			<%= touch_select_tag "FAMILY PLANNING METHOD", @patient, options_for_select(@select_options['family_planning_methods']),
-				{	:id => "fpm_used",
-					:condition => '$("on_fpm").value == "YES"',
-					:multiple => true,
-					:tt_pageStyleClass => "NoKeyboard",
-					:helpText => "What method?" } %>
-
-			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
-				{	:id => "refill_fpm",
-					:helpText => "Refill on family planning method on this visit?" } %>
-
-			<%= touch_yes_no_tag "PICKED UP DRUG SUPPLY", @patient, nil,
-				{	:id => "picked_up_supply",
-					:helpText => "Did the patient pick up drug supply?" } %>
-
 			<%= hidden_field_tag "filter[provider]", nil %>
 			<%= submit_tag "Finish" %>    
 		</form>

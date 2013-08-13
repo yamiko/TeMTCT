@@ -38,9 +38,10 @@ class EncountersController < GenericEncountersController
 		end
 		
 
-		if (params[:encounter_type].upcase rescue '') == 'ANC_FOLLOWUP'
+		if (params[:encounter_type].upcase rescue '') == 'ANC_FOLLOWUP' ||
+			(params[:encounter_type].upcase rescue '') == 'PNC_FOLLOWUP'
 
-			other = ['Other', 'Other']
+			other = [['Other', 'Other']]
 
 			@arv_drugs = temtct_regimen_options
 			@arv_drugs = @arv_drugs - other
