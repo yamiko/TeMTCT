@@ -1,0 +1,3 @@
+class ConfirmController < GenericConfirmController
+
+end

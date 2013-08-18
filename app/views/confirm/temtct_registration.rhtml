@@ -467,7 +467,8 @@
 </script>
 
 <% if @patient_is_child_bearing_female %>
-	<form id='appointment' action="/encounters/create" method='post'>
+	<form action="/confirm/confirm" method='post'>
+		<%= hidden_field_tag "encounter[encounter_id]", @encounter_id %>
 		<%= hidden_field_tag "encounter[encounter_type_name]", "TEMTCT REGISTRATION" %>
 		<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
 		<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
@@ -638,7 +639,8 @@
 
 	</form>
 <% elsif @patient_bean.age <= 5 %>
-	<form id='appointment' action="/encounters/create" method='post'>
+	<form action="/confirm/confirm" method='post'>
+		<%= hidden_field_tag "encounter[encounter_id]", @encounter_id %>
 		<%= hidden_field_tag "encounter[encounter_type_name]", "TEMTCT REGISTRATION" %>
 		<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
 		<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>

@@ -727,6 +727,24 @@ function generateDashboard(){
         }
 
     }
+	    // show message if any
+    var flashMessage = "";
+    var flashElement = __$("flash_notice");
+    if (flashElement){
+        flashMessage += flashElement.innerHTML;
+        flashElement.innerHTML = "";
+    }
+
+    flashElement = __$("flash_error");
+    if (flashElement){
+        flashMessage += flashElement.innerHTML;
+        flashElement.innerHTML = "";
+    }
+
+    if (flashMessage.length > 0) {
+        showMessage(flashMessage);
+    }
+
 
 }
 

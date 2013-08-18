@@ -537,8 +537,8 @@ class EncountersController < GenericEncountersController
 		require_registration = false
 		patient = patient_obj || find_patient
 
-		temtct_registration = Encounter.find(:first,:conditions =>["patient_id = ? 
-		              AND encounter_type = ?",patient.id,
+		temtct_registration = Encounter.find(:first, :conditions =>["patient_id = ? 
+		              AND encounter_type = ?", patient.id,
 		              EncounterType.find_by_name("TEMTCT REGISTRATION").id],
 		              :order =>'encounter_datetime DESC,date_created DESC')
 

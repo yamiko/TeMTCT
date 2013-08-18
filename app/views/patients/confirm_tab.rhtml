@@ -12,7 +12,8 @@
   function voiding(node) {
     confirmYesNo("Rekey this encounter?", function() {
 		hideConfirmation();
-		window.parent.location = '/patients/confirm/15';
+		window.parent.location = '/confirm/rekey/' + node.parent().attr('encounter');
+		//window.parent.location = '/patients/confirm/15';
       /*$.post('/encounters/void/' + node.parent().attr('encounter'), {}, function(data, status) {
         if (status == 'success') {
           document.getElementById('observations').innerHTML = '';
@@ -25,14 +26,15 @@
   function rekey(node) {
     confirmYesNo("Rekey this encounter?", function() {
 		hideConfirmation();
-		window.location = '/patients/confirm/15';
-      $.post('/encounters/void/' + node.parent().attr('encounter'), {}, function(data, status) {
+		alert('Go to -> /confirm/rekey/' + node.parent().attr('encounter'));
+		window.location = '/confirm/rekey/' + node.parent().attr('encounter');
+/*      $.post('/encounters/void/' + node.parent().attr('encounter'), {}, function(data, status) {
         if (status == 'success') {
           document.getElementById('observations').innerHTML = '';
           node.parent().remove();
         }
-      })
-    }, function() { hideConfirmation(); });
+      }) */
+    }, function() { hideConfirmation(); }); 
   }
 
   jQuery(document).ready(function($) {

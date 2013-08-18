@@ -153,10 +153,12 @@
 			<%= touch_select_tag "HIV TEST RESULT", @patient, concept_set_options('HIV TEST RESULT'),
 				{	:id => 'treatment_status',
 					:multiple => false,
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "What was the test result?" } %>
 
 			<%= touch_date_tag "DNA-PCR TESTING RESULT RECEIVED DATE", @patient, nil,                   
 				{	:id => "sample_date",                                               
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "When was the result received?" } %>
 
 			<%= touch_date_tag "DNA-PCR TESTING RESULT GIVEN DATE", @patient, nil,                   

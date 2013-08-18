@@ -9,7 +9,7 @@
 			tstUsername = "";
 			tstCurrentDate = "<%= @date %>";
 			//tt_cancel_destination = '/clinic';
-			tt_cancel_show = '/clinic';
+			tt_cancel_show = '/patients/show/<%=@patient.id %>' ;
 		</script>
 	</head>
 	<body>
@@ -28,9 +28,6 @@
 			    <span id='patient_gender'><%= @patient_bean.sex rescue "" %></span>
 
 			    <div id="patient_card">
-					<% if (session[:datetime].to_date rescue '') != '' %>
-						<span value="<%= @date rescue "" %>">Date</span>
-					<% end %>
 			    </div>
 
 			    <select id="tabs">
@@ -57,6 +54,16 @@
 				<% end %>
 			</form>
 		</div>
+        <% unless flash[:notice].nil? %>
+          <p id="flash_notice" style="color: green"><%= flash[:notice] %></p>
+        <% end %>
+        <% unless flash[:error].nil? %>
+          <p id="flash_error" style="color: red"><%= flash[:error] %></p>
+        <% end %>
+        <% unless flash[:error].nil? %>
+          <p id="flash_alert" style="color: green"><%= flash[:alert] %></p>
+        <% end %>
+        <%= yield %>  
 	</body>
 </html>
 

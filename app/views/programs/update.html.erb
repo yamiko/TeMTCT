@@ -12,6 +12,22 @@
   var program_date_completed = "<%= @program_date_completed %>"
 
   var current_state_input_box = null
+
+	function clearDate(condition) {
+		if($('date_known').value != 'YES' && condition == 0){
+			$('death_date').value = '';
+		}
+
+		if($("initial_state").value == '145' && condition == 1){
+			$('death_date').value = '';
+		}
+
+		if($('termination_reason').value != 'Death of mother' && condition == 2){
+			$('death_date').value = '';
+		}
+	}	
+
+
   function set_workflow_for_states() {
     var workflow_id = <%= @program_workflow_id %>
     var current_state = '<%=@current_state%>'
@@ -181,6 +197,7 @@
 		{	:id => 'current_date',
 			:field_type => 'date',
 			:tt_onLoad => "changeNextButtonCaption()",
+			:tt_onUnload => 'clearDate(1)',
 			:helpText => "New outcome start date",
 			:max => "#{(Date.today).strftime('%Y-%m-%d')}",
 			:validationJS =>"validStartDate()",
@@ -211,14 +228,17 @@
 
 	<%= touch_select_tag "Reason for exiting TeMTCT program", @patient, concept_set_options('Reason for exiting TeMTCT program'),
 		{	:id => 'termination_reason',
+			:condition => '$("initial_state").value == "146"',
+			:tt_onUnload => 'clearDate(2)',
 			:multiple => false,
 			:tt_pageStyleClass => "NoKeyboard", 
-			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:tt_onLoad => "__$('keyboard').style.display = 'none'; ",
 			:helpText => "Reason for termination" } %>
 
 	<%= touch_yes_no_tag "DATE OF DEATH KNOWN", @patient, nil,
 		{	:id => "date_known",
 			:condition => '$("termination_reason").value == "Death of mother"',
+			:tt_onUnload => 'clearDate(0)',
 		 	:helpText => "Is the date of death known?" } %>
 
 	<%= touch_text_field_tag "DATE OF DEATH", @patient, nil,                   
@@ -237,7 +257,7 @@
 	<%= touch_yes_no_tag "CAUSE OF DEATH KNOWN", @patient, nil,
 		{	:id => "cause_known",
 			:condition => '$("termination_reason").value == "Death of mother"',
-		 	:helpText => "Is the date of death known?" } %>
+		 	:helpText => "Is the cause of death known?" } %>
 
 	<%= touch_text_field_tag "CAUSE OF DEATH", @patient, nil,
 		{	:id => "cause_of_death",

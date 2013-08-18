@@ -72,8 +72,8 @@
 						<%= ((session[:datetime].to_date rescue '') != '' ? "Reset Date" : "Set Date") %></option>
 						<% if (session[:datetime].to_date rescue '') != '' %>
 							<option link='/patients/programs_dashboard/<%= @patient.id %>'>Update Outcome</option>
-							<!--option link='/patients/confirm/<%= @patient.id %>'>Rekey</option-->
 						<% end %>
+						<option link='/patients/confirm/<%= @patient.id %>'>Rekey</option>
 					</select>
 				<% end %>
 			</form>

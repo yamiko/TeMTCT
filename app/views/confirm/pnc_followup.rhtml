@@ -139,7 +139,8 @@
 </script>
 
 	<% if @patient_is_child_bearing_female %>
-		<form action="/encounters/create" method='post'>
+		<form action="/confirm/confirm" method='post'>
+			<%= hidden_field_tag "encounter[encounter_id]", @encounter_id %>
 			<%= hidden_field_tag "encounter[encounter_type_name]", "PNC FOLLOWUP" %>
 			<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
@@ -188,7 +189,8 @@
 			<%= submit_tag "Finish" %>    
 		</form>
 	<% else %>
-		<form action="/encounters/create" method='post'>
+		<form action="/confirm/confirm" method='post'>
+			<%= hidden_field_tag "encounter[encounter_id]", @encounter_id %>
 			<%= hidden_field_tag "encounter[encounter_type_name]", "PNC FOLLOWUP" %>
 			<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
