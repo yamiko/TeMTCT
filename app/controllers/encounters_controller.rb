@@ -1139,5 +1139,27 @@ class EncountersController < GenericEncountersController
 		return options
 	end
 
+	def observations
+		# We could eventually include more here, maybe using a scope with includes
+		encounter = Encounter.find(params[:id], :include => [:observations])
+		@child_obs = {}
+		@observations = []
+		encounter.observations.map do |obs|
+			next if !obs.obs_group_id.blank?
+			next if ConceptName.find_by_concept_id(obs.concept_id).name.match(/Workstation location/)
+			if ConceptName.find_by_concept_id(obs.concept_id).name.match(/location/)
+				obs.value_numeric = ""
+				@observations << obs
+			else
+				@observations << obs
+		  	end
+			child_obs = Observation.find(:all, :conditions => ["obs_group_id = ?", obs.obs_id])
+			if child_obs
+				@child_obs[obs.obs_id] = child_obs
+			end
+    	end
+
+		render :layout => false
+	end
 
 end

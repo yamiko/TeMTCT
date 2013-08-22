@@ -73,6 +73,21 @@ module TouchscreenHelper
     content
   end
 
+  def touch_calendar_field_tag(concept, patient, value, options={}, time=DateTime.now())
+	#raise options.to_yaml if concept == "Specific presenting complaint"
+
+    options = {
+      :field_type => 'alpha',
+      :allowFreeText => true
+    }.merge(options)                 
+    content = ""
+    content << text_field_tag("observations[][value_datetime]", value, options) 
+    content << touch_meta_tag(concept, patient, time, 'value_datetime', options)
+    content
+	#raise options.to_yaml if concept == "Specific presenting complaint"
+	#raise content.to_yaml if concept == "Specific presenting complaint"
+  end
+
   def touch_text_field_tag(concept, patient, value, options={}, time=DateTime.now())
 	#raise options.to_yaml if concept == "Specific presenting complaint"
 

@@ -73,16 +73,44 @@
 <%= javascript_include_tag "dateformat" %>
 
 <script>
-  var tt_cancel_destination = "/patients/show/<%= @patient.patient_id %>"
-  var patient_age = null;
+	var tt_cancel_destination = "/patients/show/<%= @patient.patient_id %>"
+	var patient_age = null;
+
+	function cssText() {
+		element = document.getElementsByClassName("inputFrameClass")[0];
+		element.style.cssText = 'height:280px !important';
+	}
+
+	function clearDate(condition) {
+
+		if($('patient_pregnant').value == 'NO' && condition == 0){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($("patient_hiv").value == 'NO' && condition == 1){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($('plan_to_not_move').value == 'NO' && condition == 2){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($('not_at_other_facility').value == 'NO' && condition == 3){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($('sign_form').value == 'NO' && condition == 4){
+			$('estimated_delivery_date').value = '';
+		}
+	}	
 
 	function isNumber(n) {
 	  return !isNaN(parseFloat(n)) && isFinite(n);
 	}
 
-  function validateDOB() {                                                      
-    setDOB();                                                                   
-    curr_date = new Date();                                                     
+	function validateDOB() {                                                      
+	setDOB();                                                                   
+	curr_date = new Date();                                                     
                                                                                 
     if (dateCreate(set_dob) == 'Invalid Date') {                                
       if (set_dob.split('-')[1] == 'Unknown')                                   
@@ -113,357 +141,6 @@
     return true                                                                 
   }   
 
-  function checkBirthDate(){
-    var dateCheck = "";
-    var confirmatoryHIVtestDate = new Date ($('confirmatory_hiv_test_date').value);
-    var patientBirthDate = new Date("<%= @patient.person.birthdate.year %>","<%= @patient.person.birthdate.month - 1 %>","<%= @patient.person.birthdate.day %>");
-
-    if (patientBirthDate <= confirmatoryHIVtestDate){
-      dateCheck = 'true'
-    } else {
-      dateCheck = 'false'
-    }
-    return dateCheck; 
-  }
-
-  function showConditions() {
-    if ($("ever_registered_at_ART_clinic").value == "NO") {
-      return false;
-    }else if($('has_transfer_letter').value == "YES") {
-      return true;
-    }else {return false;}
-  }
-
-  function updateCD4CountKeyPad() {                                             
-    curr_page = tstCurrentPage - 1                                              
-    buttons = document.getElementsByClassName("keyboardButton");                
-    $("clearButton").setAttribute("onmousedown","clearInput();updateCD4CountKeyPad();");
-    $("backButton").setAttribute("onmousedown",";gotoPage(" + curr_page + ", null, true);resetPad();");
-    $("nextButton").setAttribute("onmousedown","gotoNextPage();resetPad();");   
-                                                                                
-    for(i = 0; i < buttons.length ; i++) {                                      
-      if (buttons[i].id == "equals" || buttons[i].id == "greaterthan" || buttons[i].id == "lessthan") {
-        buttons[i].disabled = false;                                            
-        if( buttons[i].id == "equals"){                                         
-          buttons[i].setAttribute("onmousedown","press('=');resetKeyPad();");   
-        }else if( buttons[i].id == "lessthan") {                                
-          buttons[i].setAttribute("onmousedown","press('<');resetKeyPad();");   
-        }else if( buttons[i].id == "greaterthan") {                             
-          buttons[i].setAttribute("onmousedown","press('>');resetKeyPad();");   
-        }                                                                       
-      }else{                                                                    
-        buttons[i].disabled = true;                                             
-      }                                                                         
-    }                                                                           
-  }
-
-
-   function updateCD4Count() {                                                   
-    var cd4_available = $('new_cd4_count_available').value == 'YES';            
-    var cd4_count = cd4_available ? $('cd4_count').value : null;                
-                                                                                
-    try { cd4_count_numeric = parseInt(cd4_count); } catch(e) { cd4_count_numeric = null; }
-                                                                                
-    if (cd4_count_numeric == null || ''+cd4_count_numeric == 'NaN') {           
-      try {                                                                     
-        var matches = cd4_count.match(/^(>|<|=)([0-9\.]+)$/);                   
-        cd4_count_modifier = matches[1];                                        
-        cd4_count_estimate = parseInt(matches[2]);                              
-        cd4_count_numeric = cd4_count_estimate;                                 
-        if (cd4_count_modifier == '<') cd4_count_numeric -= 1;                  
-        if (cd4_count_modifier == '>') cd4_count_numeric += 1;                  
-      } catch(e) {                                                              
-        cd4_count_modifier = null;                                              
-        cd4_count_estimate = null;                                              
-        cd4_count_numeric = null;                                               
-      }                                                                         
-    }                                                                           
-                                                                                    
-    if (cd4_count_numeric == null || '' + cd4_count_numeric == 'NaN') {         
-      $('cd4_count_less_than_250').value = "UNKNOWN";                           
-      $('cd4_count_less_than_350').value = "UNKNOWN";                           
-    } else {                                                                    
-      $('cd4_count_less_than_250').value = (cd4_count_numeric <= 250) ? "YES" : "NO";
-      $('cd4_count_less_than_350').value = (cd4_count_numeric <= 350) ? "YES" : "NO";
-    }                                                                        
-  }                                                                             
-   
-  function updateCD4Percent() {                                                 
-    var cd4_percent_available = $('new_cd4_percent_available').value == 'YES';  
-    var cd4_percent = cd4_percent_available ? $('cd4_percent').value : null;    
-    var cd4_percent_numeric, cd4_percent_estimate, cd4_percent_modifier;        
-                                                                                
-    try { cd4_percent_numeric = parseInt(cd4_percent); } catch(e) { cd4_percent_numeric = null; }
-                                                                                
-    if (cd4_percent_numeric == null || ''+cd4_percent_numeric == 'NaN') {       
-      try {                                                                     
-        var matches = cd4_percent.match(/^(>|<|=)([0-9\.]+)$/);                   
-        cd4_percent_modifier = matches[1];                                      
-        cd4_percent_estimate = parseInt(matches[2]);                            
-        cd4_percent_numeric = cd4_percent_estimate;                             
-        if (cd4_percent_modifier == '<') cd4_percent_numeric -= 1;              
-        if (cd4_percent_modifier == '>') cd4_percent_numeric += 1;              
-      } catch(e) {                                                              
-        cd4_percent_modifier = null;                                            
-        cd4_percent_estimate = null;                                            
-        cd4_percent_numeric = null;                                             
-      }                                                                         
-    }                                                                           
-                                                                                
-    if (cd4_percent_numeric == null || ''+cd4_percent_numeric == 'NaN') {       
-      $('cd4_percent_less_than_25').value = "UNKNOWN";                          
-    } else {                                                                    
-      $('cd4_percent_less_than_25').value = (cd4_percent_numeric < 25) ? "YES" : "NO";
-    }                                                                           
-  }
-
-
-
-  function resetPad() {                                                         
-    curr_page = tstCurrentPage - 1                                              
-    buttons = document.getElementsByClassName("keyboardButton");                
-    for(i = 0; i < buttons.length ; i++) {                                      
-        buttons[i].disabled = false;                                            
-    }                                                                           
-    $("clearButton").setAttribute("onmousedown","clearInput();");               
-    $("backButton").setAttribute("onmousedown",";gotoPage(" + curr_page + ", null, true);");
-    $("nextButton").setAttribute("onmousedown","gotoNextPage();");              
-  }                                                                             
-                                                                                
-  function resetKeyPad() {                                                      
-    buttons = document.getElementsByClassName("keyboardButton");                
-    for(i = 0; i < buttons.length ; i++) {                                      
-      if (buttons[i].id == "equals" || buttons[i].id == "greaterthan" || buttons[i].id == "lessthan") {
-        buttons[i].disabled = true;                                             
-      }else{                                                                    
-        buttons[i].disabled = false;                                            
-      }                                                                         
-    }                                                                           
-  }  
-
-  function updateCD4CountKeyPad() {                                             
-    curr_page = tstCurrentPage - 1                                              
-    buttons = document.getElementsByClassName("keyboardButton");                
-    $("clearButton").setAttribute("onmousedown","clearInput();updateCD4CountKeyPad();");
-    $("backButton").setAttribute("onmousedown",";gotoPage(" + curr_page + ", null, true);resetPad();");
-    $("nextButton").setAttribute("onmousedown","gotoNextPage();resetPad();");   
-                                                                                
-    for(i = 0; i < buttons.length ; i++) {                                      
-      if (buttons[i].id == "equals" || buttons[i].id == "greaterthan" || buttons[i].id == "lessthan") {
-        buttons[i].disabled = false;                                            
-        if( buttons[i].id == "equals"){                                         
-          buttons[i].setAttribute("onmousedown","press('=');resetKeyPad();");   
-        }else if( buttons[i].id == "lessthan") {                                
-          buttons[i].setAttribute("onmousedown","press('<');resetKeyPad();");   
-        }else if( buttons[i].id == "greaterthan") {                             
-          buttons[i].setAttribute("onmousedown","press('>');resetKeyPad();");   
-        }                                                                       
-      }else{                                                                    
-        buttons[i].disabled = true;                                             
-      }                                                                         
-    }                                                                           
-  }  
-
-  function getDateStartedART() {
-    var year = $("year_started_art").value;
-    var month = $("month_started_art").value;
-    var day = $("day_started_art").value;
-
-    if (month.length == 1)
-      month = 0 + month;
-
-    if (day.length == 1)
-      day = 0 + day;
-
-    if(year == "Unknown") {
-      return new Date();
-    }else if(month == "Unknown") {
-      return new Date(year + "-07-01")
-    }else if(day == "Unknown") {
-      return new Date(year + "-" + month + "-01")
-    }else{
-      return new Date(year + "-" + month + "-" + day)
-    }
-  }
-  
-  function calculateWHOstage() {
-    stage = "I";
-    if ($("has_transfer_letter").value == "YES") {
-      if ($("stage_4_conditions").value.length > 0) {
-        stage = "IV";
-      }else if ($("stage_3_conditions").value.length > 0) {
-        stage = "III";
-      }else if ($("stage_2_conditions").value.length > 0) {
-        stage = "II";
-      }
-      var startDate = getDateStartedART();   
-    }
-
-    if(showARTstartDate() && $("year_started_art").value.toUpperCase() == "UNKNOWN") {
-      ARTstartDateEstimate = $("art_start_date_estimation").value;
-      <% curr_session_date = session[:datetime].to_date rescue Date.today %>
-      if (ARTstartDateEstimate == "6 months ago") {
-        var startDate = new Date("<%= (curr_session_date - 6.months).to_s%>");   
-      }else if (ARTstartDateEstimate == "12 months ago") {
-        var startDate = new Date("<%= (curr_session_date - 12.months).to_s%>");   
-      }else if (ARTstartDateEstimate == "18 months ago") {
-        var startDate = new Date("<%= (curr_session_date - 18.months).to_s%>");   
-      }else if (ARTstartDateEstimate == "24 months ago") {
-        var startDate = new Date("<%= (curr_session_date - 24.months).to_s%>");   
-      }else if (ARTstartDateEstimate == "Over 2 years ago") {
-        var startDate = new Date("<%= (curr_session_date - 30.months).to_s%>");   
-      }else{
-        var startDate = getDateStartedART();
-      }
-    }
-   
-    var patientBirthdate = new Date("<%=@patient.person.birthdate %>");
-    var dateCreated = new Date("<%=@patient.person.date_created %>");
-    var patientBirthdateEstimated = "<%=@patient.person.birthdate_estimated %>";
-   
-    if(!startDate)
-      return 
-    
-    var patient_age = age(patientBirthdate , patientBirthdateEstimated , dateCreated, startDate);
-
-    if (patient_age <= 14) {
-      $("who_stage").value = "WHO stage " + stage + " peds";
-    }else{
-      $("who_stage").value = "WHO stage " + stage + " adult";
-    }
-    $("date_started_art").value = dateFormat(startDate,"yyyy-mm-dd");
-  } 
-  
-  function age(birthdate,birthdate_estimated,date_created,today) {
-    patient_age = (today.getFullYear() - birthdate.getFullYear()) + ((today.getFullYear() - (birthdate.getMonth() + 1)) + ((today.getDate() - birthdate.getDate()) < 0 ? -1 : 0) < 0 ? - 1 : 0)
-    birth_date= birthdate                                                   
-    estimate = birthdate_estimated                                           
-    if (birth_date.month == 7 && birth_date.day == 1 && estimate == 1 && Time.now.month < birth_date.month && date_created.getFullYear() == (new Date().getFullYear())) {
-      return patient_age + 1                                                   
-    }else{
-      return patient_age
-    }
-  }
-  
-  function calculateBMI() {
-    var currentWeight = $("weight").value;
-    var currentHeight = $("height").value;
-    currentBmi = (currentWeight/(currentHeight*currentHeight)*10000).toFixed(1);
-    try {
-      $('bmi').value = currentBmi;
-    }catch(e){}
-  }
-  
-  function buildDate(type) {
-    if (type.match(/confirmatory/i)) {
-      var year = $("confirmatory_hiv_test_year").value;
-      var year_element = $("confirmatory_hiv_test_year");
-      var month = $("confirmatory_hiv_test_month").value;
-      var month_element = $("confirmatory_hiv_test_month");
-      var day = $("confirmatory_hiv_test_day").value;
-      var day_element = $("confirmatory_hiv_test_day");
-    }else if (type.match(/art_last_taken/i)) {
-      var year = $("year_art_last_taken").value;
-      var year_element = $("year_art_last_taken");
-      var month = $("month_art_last_taken").value;
-      var month_element = $("month_art_last_taken");
-      var day = $("day_art_last_taken").value;
-      var day_element = $("day_art_last_taken");
-    }
-
-    if(year.length < 1) {
-      if (type.match(/confirmatory/i)) {
-        $("confirmatory_hiv_test_date").value = null;
-      }else if (type.match(/art_last_taken/i)) {
-        $("date_art_last_taken").value = null;
-      }
-      return
-    }
-
-    if(day.length < 1) {
-      try {
-        var days = day_element;
-        for(i = 0;i<days.length;i++) {
-          if(days[i].value.length > 0){
-            day = days[i].value;
-            break;
-          }
-        }
-      }catch(e){ return }
-    }
-
-    if (month.length == 1)
-      month = 0 + month;
-
-    if (day.length == 1)
-      day = 0 + day;
-
-
-
-    if (type.match(/confirmatory/i)) {
-      if(year == "Unknown") {
-        $("confirmatory_hiv_test_date").value = year;
-      }else if(month == "Unknown") {
-        $("confirmatory_hiv_test_date").value = year + "-07-01";
-      }else if(day == "Unknown") {
-        $("confirmatory_hiv_test_date").value = year + "-" + month + "-01";
-      }else{
-        $("confirmatory_hiv_test_date").value = year + "-" + month + "-" + day;
-      }
-    }else if (type.match(/art_last_taken/i)) {
-      if(year == "Unknown") {
-        $("date_art_last_taken").value = year;
-      }else if(month == "Unknown") {
-        $("date_art_last_taken").value = year + "-07-01";
-      }else if(day == "Unknown") {
-        $("date_art_last_taken").value = year + "-" + month + "-01";
-      }else{
-        $("date_art_last_taken").value = year + "-" + month + "-" + day;
-      }
-    }
-  } 
-
-  function setUnkownStage() {
-    if($("has_transfer_letter").value == "YES")
-      return
-
-    everReceivedARVs = $("ever_received_art").value;
-    everRegisteredAtARTclinic = $("ever_registered_at_ART_clinic").value;
-
-    if (everRegisteredAtARTclinic == "YES" && everReceivedARVs == "YES" && $("has_transfer_letter").value == "NO") {
-      $("reason_for_art_eligibility").value = "Unknown";
-      $("drug_start_date").value = "Estimated";
-      calculateWHOstage();
-    }else{
-      $("reason_for_art_eligibility").value = null;
-      $("drug_start_date").value = null;
-    }
-  }
-
-  function setReasonForStarting() {
-    var backButton = $("backButton");
-    backButton.setAttribute("onmousedown","resetReasonForStarting();gotoPage('" + (tstCurrentPage - 1) + "',null,true);");
-    $("reason_for_art_eligibility").value = null;
-    $("drug_start_date").value = null;
-  }
-
-  function resetReasonForStarting() {
-    var backButton = $("backButton");
-    backButton.setAttribute("onmousedown","gotoPage('" + tstCurrentPage + "',null,true);");
-    $("reason_for_art_eligibility").value = null;
-  }
-
-  function validateDate() {
-    return false;
-  }
-
-  function showARTstartDate() {
-    if($("ever_received_art").value == "YES" && $("ever_registered_at_ART_clinic").value == "YES"){
-      if($("has_transfer_letter").value == "NO" || $("has_transfer_letter").value == "YES")
-        return true
-    } 
-    return false
-  }
 </script>
 
 <% if @patient_is_child_bearing_female %>
@@ -482,43 +159,53 @@
 
 		<%= touch_yes_no_tag "PATIENT PREGNANT", @patient, nil,
 			{	:id => "patient_pregnant",
-				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'none';setTimeout('cssText();',1);",
+				:tt_onUnload => 'clearDate(0)',
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient pregnant at the time of booking?" } %>
 
 		<%= touch_yes_no_tag "HIV+", @patient, nil,
 			{	:id => "patient_hiv",
+				:tt_onUnload => 'clearDate(1)',
 			 	:condition => '$("patient_pregnant").value == "YES"',
-				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'none';setTimeout('cssText();',1);",
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient confirmed as HIV+ at the time of booking?" } %>
 
 		<%= touch_yes_no_tag "PLAN TO NOT MOVE", @patient, nil,
 			{	:id => "plan_to_not_move",
+				:tt_onUnload => 'clearDate(2)',
 			 	:condition => '$("patient_hiv").value == "YES"',
-				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'none';setTimeout('cssText();',1);",
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient NOT planning to move in the next 6-9 months?" } %>
 
 		<%= touch_yes_no_tag "NOT ENROLLED AT OTHER FACILITY", @patient, nil,
 			{	:id => "not_at_other_facility",
-				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_onUnload => 'clearDate(3)',
+				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'none';setTimeout('cssText();',1);",
 			 	:condition => '$("plan_to_not_move").value == "YES"',
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient NOT enrolled in study at other facility?" } %>
 
 		<%= touch_yes_no_tag "SIGNED CONSENT FORM", @patient, nil,
 			{	:id => "sign_form",
+				:tt_onUnload => 'clearDate(4)',
 			 	:condition => '$("not_at_other_facility").value == "YES"',
-				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'none';setTimeout('cssText();',1);",
+				:tt_requireNextClick => false,
 			 	:helpText => "Has patient signed informed consent form?" } %>
 
 		<%= touch_text_field_tag "ANC NUMBER", @patient, nil,
 			{	:id => "anc_number",
 				:condition => '$("sign_form").value == "YES"',
 				:helpText => "Enter the patient's ANC number",
-				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
+				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'inline';" } %>
 
-		<%= touch_text_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
+		<%= touch_calendar_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
 			{	:id => "estimated_delivery_date", 
 				:condition => '$("sign_form").value == "YES"',
-				:field_type => "calendar",    
+				:field_type => "calendar",
 				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
 				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
 				:startweekdate => (@session_date - 7.days),
