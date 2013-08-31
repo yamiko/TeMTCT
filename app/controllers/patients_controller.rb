@@ -795,7 +795,9 @@ class PatientsController < GenericPatientsController
     session_date = Date.today
   	start_date = session_date.strftime('%Y-%m-%d 00:00:00')
   	end_date = session_date.strftime('%Y-%m-%d 23:59:59')
-    @encounters = Encounter.find(:all, 	:conditions => [" patient_id = ? AND date_created >= ? AND date_created <= ?", @patient.id, start_date, end_date])
+    @encounters = Encounter.find(:all, 	
+									:conditions => [" patient_id = ?", @patient.id],
+									:order => 'date_created ASC')
     
     if ! allowed_hiv_viewer
       @encounters = remove_art_encounters(@encounters, 'encounter')

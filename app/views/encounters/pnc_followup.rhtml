@@ -145,14 +145,15 @@
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
-			<%= touch_text_field_tag "APPOINTMENT DATE", @patient, nil,                   
+			<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
 				{	:id => "next_appointment_date", 
+					:tt_onLoad => "showCategory('Next appointment'); __$('category').style.opacity = 0.75;",
 					:field_type => "calendar",    
-					:startweekdate => (@session_date - 7.days),
+					:startweekdate => '',
 					:value => @session_date,
-					:endweekdate => (@session_date + 365.days),
+					:endweekdate => '',
 					:ajaxCalendarUrl => "data.txt?date=",                                          
-					:helpText => "Next appointment" } %>
+					:helpText => "" } %>
 
 			<%= touch_yes_no_tag "CURRENTLY USING FAMILY PLANNING METHOD", @patient, nil,
 				{	:id => "on_fpm",
@@ -194,15 +195,16 @@
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
-			<%= touch_text_field_tag "APPOINTMENT DATE", @patient, nil,                   
+			<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
 				{	:id => "next_appointment_date", 
+					:tt_onLoad => "showCategory('Next appointment'); __$('category').style.opacity = 0.75;",
 					:field_type => "calendar",    
-					:startweekdate => (@session_date - 7.days),
+					:startweekdate => '',
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:value => @session_date,
-					:endweekdate => (@session_date + 365.days),
-					:ajaxCalendarUrl => "data.txt?date=",                                          
-					:helpText => "Next appointment" } %>
+					:endweekdate => '',
+					:ajaxCalendarUrl => "",                                          
+					:helpText => "" } %>
 
 			<%= touch_select_tag "BREAST FEEDING", @patient, concept_set_options("BREAST FEEDING"),
 				{	:id => "breast_feeding",

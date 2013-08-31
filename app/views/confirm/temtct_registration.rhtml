@@ -516,15 +516,15 @@
 				:helpText => "Enter the patient's ANC number",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
-		<%= touch_text_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
+		<%= touch_calendar_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
 			{	:id => "estimated_delivery_date", 
 				:condition => '$("sign_form").value == "YES"',
 				:field_type => "calendar",    
 				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
 				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
-				:startweekdate => (@session_date - 7.days),
+				:startweekdate => '',
 				:value => @session_date,
-				:endweekdate => (@session_date + 365.days),
+				:endweekdate => '',
 				:tt_onLoad => "showCategory('Est. delivery date'); __$('category').style.opacity = 0.75;",
 				:ajaxCalendarUrl => "",                                          
 				:helpText => "" } %>

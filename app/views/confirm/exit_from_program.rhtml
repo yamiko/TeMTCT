@@ -165,15 +165,15 @@
 				:tt_onUnload => 'clearDate()',
 			 	:helpText => "Is the date of death known?" } %>
 
-		<%= touch_text_field_tag "DATE OF DEATH", @patient, nil,                   
+		<%= touch_calendar_field_tag "DATE OF DEATH", @patient, nil,                   
 			{	:id => "death_date", 
 				:condition => '$("date_known").value == "YES"',
 				:field_type => "calendar",    
-				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
+				:minDate => "#{ (@session_date - 5.months).strftime("%Y-%m-%d") }",
 				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
-				:startweekdate => (@session_date - 7.days),
+				:startweekdate => '',
 				:value => @session_date,
-				:endweekdate => (@session_date + 365.days),
+				:endweekdate => '',
 				:tt_onLoad => "showCategory('Date of death'); __$('category').style.opacity = 0.75;",
 				:ajaxCalendarUrl => "",                                          
 				:helpText => "" } %>

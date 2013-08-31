@@ -79,4 +79,11 @@ EOF
       return rows.inject({}) {|result, row| result[encounter_types_hash[row['encounter_type']]] = row['number']; result }
     end     
   end
+
+  def void_obs(reason = nil)
+    self.observations.each do |row| 
+      row.void(reason) 
+    end rescue []
+  end
+
 end

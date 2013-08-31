@@ -30,6 +30,7 @@ class ProgramsController < GenericProgramsController
 					obs[:concept_name] = observation[:concept_name] 
 					obs[:value_coded_or_text] = observation[:value_coded_or_text] 
 					obs[:value_text] = observation[:value_text] if observation[:value_text] 
+					obs[:value_datetime] = observation[:value_datetime] if observation[:value_datetime] 
 					obs[:encounter_id] = encounter.id
 					obs[:obs_datetime] = encounter.encounter_datetime || Time.now()
 					obs[:person_id] ||= encounter.patient_id  
