@@ -484,30 +484,35 @@
 		<%= touch_yes_no_tag "PATIENT PREGNANT", @patient, nil,
 			{	:id => "patient_pregnant",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient pregnant at the time of booking?" } %>
 
 		<%= touch_yes_no_tag "HIV+", @patient, nil,
 			{	:id => "patient_hiv",
 			 	:condition => '$("patient_pregnant").value == "YES"',
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient confirmed as HIV+ at the time of booking?" } %>
 
 		<%= touch_yes_no_tag "PLAN TO NOT MOVE", @patient, nil,
 			{	:id => "plan_to_not_move",
 			 	:condition => '$("patient_hiv").value == "YES"',
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient NOT planning to move in the next 6-9 months?" } %>
 
 		<%= touch_yes_no_tag "NOT ENROLLED AT OTHER FACILITY", @patient, nil,
 			{	:id => "not_at_other_facility",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
 			 	:condition => '$("plan_to_not_move").value == "YES"',
+				:tt_requireNextClick => false,
 			 	:helpText => "Is patient NOT enrolled in study at other facility?" } %>
 
 		<%= touch_yes_no_tag "SIGNED CONSENT FORM", @patient, nil,
 			{	:id => "sign_form",
 			 	:condition => '$("not_at_other_facility").value == "YES"',
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				:tt_requireNextClick => false,
 			 	:helpText => "Has patient signed informed consent form?" } %>
 
 		<%= touch_text_field_tag "ANC NUMBER", @patient, nil,
@@ -516,9 +521,16 @@
 				:helpText => "Enter the patient's ANC number",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
+		<%= select_tag :date_present, options_for_select([['',''],['Yes','YES'],['No','NO']], ''), {
+			:allowFreeText => 'false',
+			:condition => '$("sign_form").value == "YES"',
+			:id => "date_present",
+			:tt_onUnLoad => 'if ($("date_present").value == "NO") { $("estimated_delivery_date").value = ""};',
+			:helpText => "Estimated delivery date available?"}%>
+
 		<%= touch_calendar_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
 			{	:id => "estimated_delivery_date", 
-				:condition => '$("sign_form").value == "YES"',
+				:condition => '$("sign_form").value == "YES" && $("date_present").value == "YES"',
 				:field_type => "calendar",    
 				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
 				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",

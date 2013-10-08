@@ -36,8 +36,8 @@
 
 			    <select id="tabs">
 					<option value='/patients/overview?patient_id=<%= @patient.id %>'>Overview</option>
-					<option value='/patients/visit_history?patient_id=<%= @patient.id %>'>Today</option>
-					<option value='/patients/past_visits_summary?patient_id=<%= @patient.id %>'>History</option>
+					<option value='/patients/visit_history?patient_id=<%= @patient.id %>'>History</option>
+					<option value='/patients/past_visits_summary?patient_id=<%= @patient.id %>'>Summary</option>
 				</select>
 					
 				<% if @patient.person.dead == 1%>

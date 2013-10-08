@@ -202,9 +202,16 @@
 				:helpText => "Enter the patient's ANC number",
 				:tt_onLoad => "__$('keyboard').style.display = 'none';$('nextButton').style.display = 'inline';" } %>
 
+		<%= select_tag :date_present, options_for_select([['',''],['Yes','YES'],['No','NO']], ''), {
+			:allowFreeText => 'false',
+			:id => "date_present",
+			:condition => '$("sign_form").value == "YES"',
+			:tt_onUnLoad => 'if ($("date_present").value == "NO") { $("estimated_delivery_date").value = ""};',
+			:helpText => "Estimated delivery date available?"}%>
+
 		<%= touch_calendar_field_tag "ESTIMATED DELIVERY DATE", @patient, nil,                   
 			{	:id => "estimated_delivery_date", 
-				:condition => '$("sign_form").value == "YES"',
+				:condition => '$("sign_form").value == "YES" && $("date_present").value == "YES"',
 				:field_type => "calendar",
 				:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
 				:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
