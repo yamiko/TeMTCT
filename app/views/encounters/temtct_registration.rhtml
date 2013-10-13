@@ -318,7 +318,8 @@
 
 		<%= touch_text_field_tag "ART NUMBER", @patient, nil,
 			{	:id => "art_number",
-				:condition => '$("ever_received_art").value == "Yes, on ART prior to study enrolment"',
+				:optional => true,
+				:condition => '$("sign_form").value == "YES"',
 				:helpText => "Enter the participant's ART number",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'" } %>
 
