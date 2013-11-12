@@ -1,4 +1,40 @@
-SELECT text_for_obs(encounter_id, 8389) AS ANC_number,
+SELECT 
+'Participant Number',
+'ANC number'                              ,
+'Art number'                              ,
+'ARVs in Labour'                          ,
+'Baby ARVs at Birth'                      ,
+'Baby ARVs cont_d'                        ,
+'Breast feeding'                          ,
+'Co-trimoxazole given to patient'         ,
+'Confirmatory HIV test date'              ,
+'Date antiretrovirals started'            ,
+'Delivery location'                       ,
+'Distance between home and health center' ,
+'Enrolled at first ANC visit'             ,
+'Estimated date of confinement'           ,
+'Ever received ART?'                      ,
+'Gestation weeks'                         ,
+'Gestation weeks at enrolment'            ,
+'Highest level of school completed'       ,
+'HIV infected'                            ,
+'Marital Status'                          ,
+'Method of transportation'                ,
+'Mother HIV test date'                    ,
+'Number of weeks on treatment'            ,
+'Parity'                                  ,
+'Patient NOT enrolled at other facility'  ,
+'Patient pregnant'                        ,
+'Patient signed informed consent form'    ,
+'Patient transferred in'                  ,
+'Plan to NOT move'                        ,
+'Provide voluntary consent form'          ,
+'Transfer in from'                        ,
+'Workstation location'                    ,
+'Encounter date'
+UNION
+SELECT participant_id(encounter_id), 
+text_for_obs(encounter_id, 8389),
 text_for_obs(encounter_id, 7014) AS Art_number,
 text_for_obs(encounter_id, 8182) AS ARVs_in_Labour,
 text_for_obs(encounter_id, 8186) AS Baby_ARVs_at_Birth,
@@ -28,9 +64,10 @@ text_for_obs(encounter_id, 8365) AS Patient_transferred_in,
 text_for_obs(encounter_id, 8387) AS Plan_to_NOT_move,
 text_for_obs(encounter_id, 8386) AS Provide_voluntary_consent_form,
 text_for_obs(encounter_id, 1427) AS Transfer_in_from,
-text_for_obs(encounter_id, 7759) AS Workstation_location
+text_for_obs(encounter_id, 7759) AS Workstation_location,
+encounter_datetime
  FROM encounter 
-WHERE encounter_type = 114 AND voided != 0 ORDER by encounter_datetime
+WHERE encounter_type = 114 AND voided = 0 
 INTO OUTFILE '/home/temtct/TeMTCT/db/trial.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'

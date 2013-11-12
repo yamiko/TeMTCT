@@ -60,6 +60,22 @@ BEGIN
 END */;;
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS `participant_id`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `participant_id`(my_encounter_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @participant_id = NULL;
+
+	SELECT i.identifier INTO @participant_id FROM encounter e 
+			LEFT JOIN patient_identifier i ON e.patient_id = i.patient_id AND i.identifier_type = 3 AND i.voided = 0 
+		WHERE e.encounter_id = my_encounter_id
+			AND e.voided = 0 LIMIT 1;
+
+	RETURN @participant_id;
+END */;;
+DELIMITER ;
+
+
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
