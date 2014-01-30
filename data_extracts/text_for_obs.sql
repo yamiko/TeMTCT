@@ -31,7 +31,7 @@ BEGIN
 				AND voided = 0 LIMIT 1;
 	END IF;
 
-	IF @obs_value IS NULL THEN
+	IF @obs_value IS NULL OR CHARACTER_LENGTH(LTRIM(@obs_value)) = 0 THEN
 		SELECT value_numeric INTO @obs_value FROM obs
 			WHERE encounter_id = my_encounter_id
 				AND voided = 0 
@@ -72,6 +72,41 @@ BEGIN
 			AND e.voided = 0 LIMIT 1;
 
 	RETURN @participant_id;
+END */;;
+DELIMITER ;
+
+DROP FUNCTION IF EXISTS `dob`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `dob`(my_person_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @dob = NULL;
+
+	SELECT p.birthdate INTO @dob FROM person p 
+		WHERE p.person_id = my_person_id
+			AND p.voided = 0 LIMIT 1;
+
+	RETURN @dob;
+END */;;
+DELIMITER ;
+
+DROP FUNCTION IF EXISTS `dob_estimated`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `dob_estimated`(my_person_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @dob_e_flag = NULL;
+	SET @dob_e_resp = NULL;
+
+	SELECT p.birthdate_estimated INTO @dob_e_flag FROM person p 
+		WHERE p.person_id = my_person_id
+			AND p.voided = 0 LIMIT 1;
+
+	IF @dob_e_flag = 1 THEN
+		SET @dob_e_resp = 'YES';
+	ELSE
+		SET @dob_e_resp = 'NO';
+	END IF;
+
+	RETURN @dob_e_resp;
 END */;;
 DELIMITER ;
 

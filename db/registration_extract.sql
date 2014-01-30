@@ -63,8 +63,8 @@ text_for_obs(encounter_id, 8388) AS Patient_signed_informed_consent_form,
 text_for_obs(encounter_id, 8365) AS Patient_transferred_in,
 text_for_obs(encounter_id, 8387) AS Plan_to_NOT_move,
 text_for_obs(encounter_id, 8386) AS Provide_voluntary_consent_form,
-text_for_obs(encounter_id, 1427) AS Transfer_in_from,
-text_for_obs(encounter_id, 7759) AS Workstation_location,
+location_for_obs(encounter_id, 1427) AS Transfer_in_from,
+location_for_obs(encounter_id, 7759) AS Workstation_location,
 encounter_datetime
  FROM encounter 
 WHERE encounter_type = 114 AND voided = 0 
