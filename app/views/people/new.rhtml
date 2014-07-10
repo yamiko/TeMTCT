@@ -123,7 +123,7 @@
 
 	<%= hidden_field_tag "person[names][middle_name]", "N/A" %>
 
-	<% if params[:identifier][5, 1] == 'M' %>
+	<!--% if params[:identifier][5, 1] == 'M' %-->
 
 		<%= text_field_tag "person[birth_year]", nil, {:helpText => 'Year of Birth', :field_type => 'number', :absoluteMin => "1890", :min => "1940", :absoluteMax => (Date.today.year - 11), :tt_pageStyleClass => "Numeric NumbersOnly", :tt_onLoad => 'seen(tstCurrentPage);',:validationJS => "setDOB();" }  %>
 
@@ -157,14 +157,14 @@
 			:tt_pageStyleClass => "NoKeyboard", 
 			:tt_onLoad => "__$('keyboard').style.display = 'none'",
 			:validationMessage => 'Please enter a valid date'} %>
-	<% else %
-		<%= hidden_field_tag "person[dummy]", "2" %>
-		<%= hidden_field_tag "person[age_estimate]", "1" %>
-		<%= hidden_field_tag "person[birth_year]", "Unknown" %>
-		<%= hidden_field_tag "person[birth_month]", "" %>
-		<%= hidden_field_tag "person[birth_day]", "" %>
+	<!--% else %-->
+		<!--%= hidden_field_tag "person[dummy]", "2" %-->
+		<!--%= hidden_field_tag "person[age_estimate]", "1" %-->
+		<!--%= hidden_field_tag "person[birth_year]", "Unknown" %-->
+		<!--%= hidden_field_tag "person[birth_month]", "" %-->
+		<!--%= hidden_field_tag "person[birth_day]", "" %-->
 
-	<% end %>
+	<!--% end %-->
 
   <%= hidden_field_tag "person[addresses][address2]", "N/A" %>
 
