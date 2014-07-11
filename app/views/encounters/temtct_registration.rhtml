@@ -328,6 +328,11 @@
 				:condition => '$("ever_received_art").value == "Yes, on ART prior to study enrolment"',
 				:helpText => "What is the date treatment was started prior to enrolment?" } %>
 
+		<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
+			{	:id => "clinical_notes", 
+				:optional => true,
+				:helpText => "Notes (optional)" } %>
+
 		<%= hidden_field_tag "filter[provider]", nil %>
 		<%= submit_tag "Finish" %>    
 
@@ -390,6 +395,11 @@
 				:multiple => false,
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
 			 	:helpText => "Breast feeding" } %>
+
+		<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
+			{	:id => "clinical_notes", 
+				:optional => true,
+				:helpText => "Notes (optional)" } %>
 
 		<%= hidden_field_tag "filter[provider]", nil %>
 		<%= submit_tag "Finish" %>    

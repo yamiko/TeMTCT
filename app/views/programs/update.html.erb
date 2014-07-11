@@ -271,6 +271,11 @@
 			:tt_onLoad => "__$('keyboard').style.display = 'none'",
 			:helpText => "Please specify" } %>
 
+	<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
+		{	:id => "clinical_notes", 
+			:optional => true,
+			:helpText => "Notes (optional)" } %>
+
 	<%= hidden_field_tag "encounter[encounter_type_name]", "EXIT FROM PROGRAM" %>
 	<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
 	<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
