@@ -2,6 +2,7 @@ class PatientsController < GenericPatientsController
 
 	def confirm
 		@patient_bean = PatientService.get_patient(@patient.person)
+		@confirmed_demographics = PatientService.get_patient_identifier(@patient, 'Dummy id')
 		render :template => 'patients/confirm', :layout => false
 	end
 

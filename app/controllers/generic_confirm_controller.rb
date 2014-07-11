@@ -501,6 +501,200 @@ class GenericConfirmController < ApplicationController
 		end
   	end
 
+	def demographics
+		@patient = Patient.find(params[:patient_id] || session[:patient_id])
+		@patient_bean = PatientService.get_patient(@patient.person)
+	end
+
+	def confirm_demographics
+		@patient = Patient.find(params[:patient_id] || session[:patient_id])
+		@patient_bean = PatientService.get_patient(@patient.person)
+		@gender = 'F'
+		@session_date = session[:datetime].to_date rescue Date.today
+		params_to_process = params[:person]
+		birthday_params = params_to_process.reject{|key,value| key.match(/gender/) }
+		person_params = params_to_process.reject{|key,value| key.match(/birth_|age_estimate|occupation|identifiers/) }
+
+		if person_params["gender"].to_s == "Female"
+      		@gender = 'F'
+		elsif person_params["gender"].to_s == "Male"
+      		@gender = 'M'
+		end
+   
+		#person = Person.create(person_params)
+		@birthdate = ''
+		@birthdate_estimated = false
+		unless birthday_params.empty?
+			if birthday_params["birth_year"] == "Unknown"
+				age = birthday_params["age_estimate"]
+				@birthdate = Date.new(@session_date.year - age.to_i, 7, 1)
+				@birthdate_estimated = 1
+			else
+				year = birthday_params["birth_year"]
+				month = birthday_params["birth_month"]
+				day = birthday_params["birth_day"]
+				# Handle months by name or number (split this out to a date method)    
+				month_i = (month || 0).to_i
+				month_i = Date::MONTHNAMES.index(month) if month_i == 0 || month_i.blank?
+				month_i = Date::ABBR_MONTHNAMES.index(month) if month_i == 0 || month_i.blank?
+		
+				if month_i == 0 || month == "Unknown"
+					@birthdate = Date.new(year.to_i,7,1)
+					@birthdate_estimated = 1
+				elsif day.blank? || day == "Unknown" || day == 0
+			    	@birthdate = Date.new(year.to_i,month_i,15)
+			    	@birthdate_estimated = 1
+				else
+			  		@birthdate = Date.new(year.to_i,month_i,day.to_i)
+			  		@birthdate_estimated = 0
+				end
+			end
+		end
+
+		matched = true
+
+		@unmatched_demographics = []
+		if @patient.person.gender != @gender
+			matched = false
+			coded_name = ''
+			saved_obs = ''
+
+			if @patient.person.gender == "F"
+		  		saved_obs = 'Female'
+			elsif @patient.person.gender == "M"
+		  		saved_obs = 'Male'
+			end
+
+			if @gender == "F"
+		  		coded_name = 'Female'
+			elsif @gender == "M"
+		  		coded_name = 'Male'
+			end
+
+			@unmatched_demographics << ['Gender', coded_name, saved_obs, @gender]
+
+		end
+
+		if @patient.person.birthdate != @birthdate
+			matched = false
+			coded_name = @birthdate
+			saved_obs = @patient.person.birthdate
+			@unmatched_demographics << ['Date of birth', coded_name, saved_obs, @birthdate]
+		end
+
+		if @patient.person.birthdate_estimated == @birthdate_estimated
+			matched = false
+
+			if @patient.person.birthdate_estimated == 1
+		  		saved_obs = 'True'
+			else
+		  		saved_obs = 'False'
+			end
+
+			if @birthdate_estimated == 1
+		  		coded_name = 'True'
+			else
+		  		coded_name = 'False'
+			end
+
+			@unmatched_demographics << ['Date of birth estimated', coded_name, saved_obs, @birthdate_estimated]
+		end
+
+		if matched
+			identifier_type_id = PatientIdentifierType.find_by_name('Dummy id').patient_identifier_type_id rescue nil
+			obs = {}
+			obs[:identifier_type] = identifier_type_id
+			obs[:patient_id] = @patient.patient_id  
+			obs[:identifier] = 'Yes'  
+			PatientIdentifier.create(obs)
+			flash[:notice] = "Record rekeyed accurately"
+			redirect_to '/patients/confirm/' + @patient.patient_id.to_s
+		else
+			session[:saved_params] = params
+	        render :action => 'accept_demographics'
+		end
+
+	end
+
+	def accept_demographics
+		@patient = Patient.find(params[:encounter][:patient_id])
+		observations = params[:observations]
+		replace = true
+		observations.each do | obs |
+			next if !replace
+			if obs[:value_coded_or_text] == 'NO'
+				replace = false
+			end
+		end
+		
+		if replace
+
+			@session_date = session[:datetime].to_date rescue Date.today
+			params_to_process = session[:saved_params][:person]
+			birthday_params = params_to_process.reject{|key,value| key.match(/gender/) }
+			person_params = params_to_process.reject{|key,value| key.match(/birth_|age_estimate|occupation|identifiers/) }
+
+			if person_params["gender"].to_s == "Female"
+		  		@gender = 'F'
+			elsif person_params["gender"].to_s == "Male"
+		  		@gender = 'M'
+			end
+	   
+			#person = Person.create(person_params)
+			@birthdate = ''
+			@birthdate_estimated = false
+			unless birthday_params.empty?
+				if birthday_params["birth_year"] == "Unknown"
+					age = birthday_params["age_estimate"]
+					@birthdate = Date.new(@session_date.year - age.to_i, 7, 1)
+					@birthdate_estimated = 1
+				else
+					year = birthday_params["birth_year"]
+					month = birthday_params["birth_month"]
+					day = birthday_params["birth_day"]
+					# Handle months by name or number (split this out to a date method)    
+					month_i = (month || 0).to_i
+					month_i = Date::MONTHNAMES.index(month) if month_i == 0 || month_i.blank?
+					month_i = Date::ABBR_MONTHNAMES.index(month) if month_i == 0 || month_i.blank?
+		
+					if month_i == 0 || month == "Unknown"
+						@birthdate = Date.new(year.to_i,7,1)
+						@birthdate_estimated = 1
+					elsif day.blank? || day == "Unknown" || day == 0
+						@birthdate = Date.new(year.to_i,month_i,15)
+						@birthdate_estimated = 1
+					else
+				  		@birthdate = Date.new(year.to_i,month_i,day.to_i)
+				  		@birthdate_estimated = 0
+					end
+				end
+			end
+			
+			person = @patient.person
+			person.birthdate = @birthdate
+			person.birthdate_estimated = @birthdate_estimated
+			person.gender = @gender
+			person.save
+
+			identifier_type_id = PatientIdentifierType.find_by_name('Dummy id').patient_identifier_type_id rescue nil
+			obs = {}
+			obs[:identifier_type] = identifier_type_id
+			obs[:patient_id] = @patient.patient_id  
+			obs[:identifier] = 'Yes'  
+			PatientIdentifier.create(obs)
+
+			flash[:notice] = "Record rekeyed and updated!"
+
+			session[:saved_params] = nil
+		else
+			flash[:notice] = "Record NOT updated!"
+		end
+		redirect_to '/patients/confirm/' + @patient.patient_id.to_s
+
+	end
+
+
+
 	def update_observation_value(observation)
 		value = observation[:value_coded_or_text]
 		value_coded_name = ConceptName.find_by_name(value)

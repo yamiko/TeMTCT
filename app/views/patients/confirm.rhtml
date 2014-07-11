@@ -44,6 +44,10 @@
 					</select>
 				<% else %>
 					<select id="links">
+						<% if @confirmed_demographics != "Yes"%>
+
+							<option value='/confirm/demographics?patient_id=<%= @patient.id -%>'>Rekey demographics</option>
+						<% end %>
 					</select>
 			
 					<select id="navigation_links">
