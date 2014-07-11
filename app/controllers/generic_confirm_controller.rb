@@ -358,11 +358,11 @@ class GenericConfirmController < ApplicationController
 			if r.regimen_index.blank?
 				["#{concept_name}","#{concept_name}"]
 			else
-				#if @patient_is_child_bearing_female
-				#	["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
-				#else
-				["#{r.regimen_index} - #{concept_name}", "#{r.regimen_index} - #{concept_name}"]
-				#end
+				if @patient_is_child_bearing_female
+					["#{r.regimen_index}A - #{concept_name}", "#{r.regimen_index}A - #{concept_name}"]
+				else
+					["#{r.regimen_index}P - #{concept_name}", "#{r.regimen_index}P - #{concept_name}"]
+				end
 			end
 		}.sort_by{| r | r[0]}.uniq
 
