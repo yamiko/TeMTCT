@@ -126,6 +126,21 @@ BEGIN
 END */;;
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS `sex`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `sex`(my_person_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @sex = NULL;
+
+	SELECT p.gender INTO @sex FROM person p 
+		WHERE p.person_id = my_person_id
+			AND p.voided = 0 LIMIT 1;
+
+	RETURN @sex;
+END */;;
+DELIMITER ;
+
+
 
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
