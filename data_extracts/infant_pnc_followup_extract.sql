@@ -8,9 +8,9 @@ SELECT
 'Cotrimoxazole given',
 'Rapid test done'                          ,
 'Rapid test results'                         ,
-'Initiated ARVs at this visit'                         ,
-'Refill ARV drug supply'            
-'Treatment_regimen'            
+'Initiated ARVs at this visit'                 ,
+'Refill ARV drug supply',            
+'Treatment_regimen', 
 'Other_treatment_regimen'            
 UNION
 SELECT 
