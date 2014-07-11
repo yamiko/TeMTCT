@@ -31,7 +31,7 @@ text_for_obs(encounter_id, 2679) AS Number_of_pills,
 text_for_obs(encounter_id, 1072) AS Days,
 text_for_obs(encounter_id, 6882) AS ART_regimen,
 text_for_obs(encounter_id, 7215) AS Other_art_regimen,
-text_for_obs(encounter_id, 1345) AS Double_data_entered,
+text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes
 FROM encounter 
 WHERE encounter_type = 115 AND voided = 0 

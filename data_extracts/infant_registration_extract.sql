@@ -29,7 +29,7 @@ text_for_obs(encounter_id, 8398) AS Delivery_location,
 text_for_obs(encounter_id, 7415) AS Gestation_weeks_at_birth,
 text_for_obs(encounter_id, 3590) AS Co_trimoxazole_given,
 text_for_obs(encounter_id, 8039) AS Breast_feeding,
-text_for_obs(encounter_id, 1345) AS Double_data_entered,
+text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes
  FROM encounter 
 WHERE encounter_type = 114 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) < 5 AND voided = 0 

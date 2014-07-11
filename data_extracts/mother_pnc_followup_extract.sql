@@ -19,7 +19,7 @@ text_for_obs(encounter_id, 374) AS Family_planning_method,
 text_for_obs(encounter_id, 7215) AS Other_family_planning_method,
 text_for_obs(encounter_id, 8397) AS Refill_FPM,
 text_for_obs(encounter_id, 8394) AS Picked_up_drug_supply,
-text_for_obs(encounter_id, 1345) AS Double_data_entered,
+text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes
  FROM encounter 
 WHERE encounter_type = 116 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) > 5 AND voided = 0 

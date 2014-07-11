@@ -49,7 +49,7 @@ location_for_obs(encounter_id, 1427) AS Transfer_in_from,
 text_for_obs(encounter_id, 3595) AS Date_of_initial_HIV_pos_diagnosis,
 text_for_obs(encounter_id, 7754) AS On_ART_prior_to_enrolment,
 text_for_obs(encounter_id, 2516) AS Date_of_treatment_initiation_prior_to_enrolment,
-text_for_obs(encounter_id, 1345) AS Double_data_entered,
+text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes
 
 	FROM encounter 
