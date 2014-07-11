@@ -1,8 +1,6 @@
 SELECT 
 'Facility code'                    ,
 'Participant Number',
---'ANC number'                              ,
---'ART number'                              ,
 'Date of Birth',
 'Sex',
 'Visit date',
@@ -13,13 +11,13 @@ SELECT
 'Delivery location'                          ,
 'Gestation weeks at birth'            ,
 'Co-trimoxazole given'         ,
-'Breast feeding'
+'Breast feeding',
+'Double data entered',
+'Notes'
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
 participant_id(encounter_id), 
---text_for_obs(encounter_id, 8389) AS ANC_number,
---text_for_obs(encounter_id, 7014) AS Art_number,
 dob(patient_id) AS Date_of_birth,
 sex(patient_id) AS Sex,
 encounter_datetime AS Visit_date,
@@ -30,7 +28,9 @@ text_for_obs(encounter_id, 1186) AS Baby_ARVs_adherence,
 text_for_obs(encounter_id, 8398) AS Delivery_location,
 text_for_obs(encounter_id, 7415) AS Gestation_weeks_at_birth,
 text_for_obs(encounter_id, 3590) AS Co_trimoxazole_given,
-text_for_obs(encounter_id, 8039) AS Breast_feeding
+text_for_obs(encounter_id, 8039) AS Breast_feeding,
+text_for_obs(encounter_id, 1345) AS Double_data_entered,
+text_for_obs(encounter_id, 2688) AS Notes
  FROM encounter 
 WHERE encounter_type = 114 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) < 5 AND voided = 0 
 INTO OUTFILE '/tmp/infant_registration.csv'

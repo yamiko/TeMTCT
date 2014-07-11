@@ -22,7 +22,8 @@ SELECT
 'Date of initial HIV+ diagnosis'                    ,
 'On ART prior to enrolment'                      ,
 'Date treatment initiation prior to enrolment',
-'Doube data entered'            
+'Double data entered',
+'Notes'            
 UNION
 SELECT 
 text_for_obs(encounter_id, 8388) AS Patient_signed_informed_consent_form,
@@ -48,7 +49,9 @@ location_for_obs(encounter_id, 1427) AS Transfer_in_from,
 text_for_obs(encounter_id, 3595) AS Date_of_initial_HIV_pos_diagnosis,
 text_for_obs(encounter_id, 7754) AS On_ART_prior_to_enrolment,
 text_for_obs(encounter_id, 2516) AS Date_of_treatment_initiation_prior_to_enrolment,
-text_for_obs(encounter_id, 1345) AS Doube_data_entered
+text_for_obs(encounter_id, 1345) AS Double_data_entered,
+text_for_obs(encounter_id, 2688) AS Notes
+
 	FROM encounter 
 		WHERE encounter_type = 114 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) > 5 
 			AND voided = 0 
