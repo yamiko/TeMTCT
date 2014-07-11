@@ -179,6 +179,12 @@ module ApplicationHelper
     options_for_select(options)
   end
 
+  def concept_set_short_options(concept_name)
+    concept_id = concept_id = ConceptName.find_by_name(concept_name).concept_id
+    set = ConceptSet.find_all_by_concept_set(concept_id, :order => 'sort_weight')
+    options = set.map{|item|next if item.concept.blank? ; [item.concept.shortname, item.concept.fullname] }
+    options_for_select(options)
+  end
 
   def selected_concept_set_options(concept_name, exclude_concept_name)
     concept_id = concept_id = ConceptName.find_by_name(concept_name).concept_id

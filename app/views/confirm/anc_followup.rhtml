@@ -146,6 +146,28 @@
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
+			<%= touch_select_tag "TYPE OF VISIT", @patient, concept_set_short_options('TYPE OF VISIT'),
+				{	:id => 'type_of_visit',
+					:multiple => false,
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:helpText => "What is the purpose of this visit?" } %>
+
+			<%= touch_select_tag "ANC VISIT", @patient, concept_set_options('ANC VISIT'),
+				{	:id => 'anc_visit',
+					:multiple => false,
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				 	:condition => '$("type_of_visit").value == "ANC Program" || $("type_of_visit").value == "Both ANC and ART"',
+					:helpText => "What is the ANC visit number?" } %>
+
+			<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
+				{	:id => "next_appointment_date", 
+					:tt_onLoad => "showCategory('Next visit'); __$('category').style.opacity = 0.75;",
+					:field_type => "calendar",    
+					:startweekdate => '',
+					:value => @session_date,
+					:endweekdate => '',
+					:ajaxCalendarUrl => "",                                          
+					:helpText => "" } %>
 
 			<%= touch_select_tag "ART TREATMENT STATUS", @patient, concept_set_options('ART TREATMENT STATUS'),
 				{	:id => 'treatment_status',
@@ -153,11 +175,45 @@
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "What is the ART treatment status for the patient?" } %>
 
+			<%= touch_yes_no_tag "ABORTION", @patient, nil,
+				{	:id => "abortion",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:helpText => "Did the patient have an abortion?" } %>
+
+			<%= touch_calendar_field_tag "ABORTION DATE", @patient, nil,                   
+				{	:id => "next_appointment_date", 
+					:tt_onLoad => "showCategory('Abortion date'); __$('category').style.opacity = 0.75;",
+					:field_type => "calendar",    
+				 	:condition => '$("abortion").value == "YES"',
+					:startweekdate => '',
+					:value => @session_date,
+					:endweekdate => '',
+					:ajaxCalendarUrl => "",                                          
+					:helpText => "" } %>
+
 			<%= touch_yes_no_tag "PICKED UP SUPPLY", @patient, nil,
 				{	:id => "picked_up_supply",
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 				 	:condition => '$("treatment_status").value != "Not yet on ART and not initiated today"',
 					:helpText => "Did the patient pick up ART drug supply?" } %>
+
+			<%= touch_text_field_tag "NO. OF PILLS", @patient, nil,
+				{	:id => "no_of_pills",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:field_type => 'number',
+					:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
+					:validationMessage => 'Please enter a valid number',
+				 	:condition => '$("picked_up_supply").value == "YES"',
+					:helpText => "What were the number of pills picked?" } %>
+
+			<%= touch_text_field_tag "DAYS", @patient, nil,
+				{	:id => "no_of_days",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:field_type => 'number',
+					:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
+					:validationMessage => 'Please enter a valid number',
+				 	:condition => '$("picked_up_supply").value == "YES"',
+					:helpText => "How many days?" } %>
 
 			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),
 				{	:id => "arvs_supplied",
