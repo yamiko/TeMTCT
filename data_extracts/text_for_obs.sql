@@ -122,6 +122,13 @@ BEGIN
 	SELECT name INTO @location_name FROM location 
 		WHERE location_id = @obs_text LIMIT 1;
 
+	IF @location_name IS NULL THEN
+		SET @my_participant_id = NULL;
+		@my_participant_id = participant_id(my_encounter_id);
+        @location_name = LEFT(@my_participant_id, 2);
+	END IF;
+
+
 	RETURN @location_name;
 END */;;
 DELIMITER ;
