@@ -101,8 +101,6 @@
 			<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
 				{	:id => "next_appointment_date", 
 					:tt_onLoad => "showCategory('Next appointment'); __$('category').style.opacity = 0.75;",
-					:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
-					:maxDate => "#{ (@session_date + 30.months).strftime("%Y-%m-%d") }",
 					:field_type => "calendar",    
 					:startweekdate => '',
 					:value => @session_date,
