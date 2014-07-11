@@ -165,6 +165,11 @@
 				{	:id => "sample_date",                                               
 					:helpText => "When was the result given to caregiver?" } %>
 
+			<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
+				{	:id => "clinical_notes", 
+					:optional => true,
+					:helpText => "Notes (optional)" } %>
+
 			<%= hidden_field_tag "filter[provider]", nil %>
 			<%= submit_tag "Finish" %>    
 		</form>
