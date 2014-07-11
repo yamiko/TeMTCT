@@ -213,7 +213,7 @@
 					:validationRule => "^([0-9]|[1-9][0-9]|[1-9][0-9][0-9])$",
 					:validationMessage => 'Please enter a valid number',
 				 	:condition => '$("picked_up_supply").value == "YES"',
-					:helpText => "How many days?" } %>
+					:helpText => "For how many days?" } %>
 
 			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),
 				{	:id => "arvs_supplied",
