@@ -173,6 +173,11 @@
 					:condition => '$("arvs_supplied").value == "Other"',
 					:helpText => "Please specify the regimen" } %>
 
+			<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
+				{	:id => "clinical_notes", 
+					:optional => true,
+					:helpText => "Notes (optional)" } %>
+
 			<%= hidden_field_tag "filter[provider]", nil %>
 			<%= submit_tag "Finish" %>    
 		</form>
