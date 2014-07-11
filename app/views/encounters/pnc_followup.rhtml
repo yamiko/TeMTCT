@@ -145,7 +145,7 @@
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
-			<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
+		<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
 				{	:id => "next_appointment_date", 
 					:tt_onLoad => "showCategory('Next appointment'); __$('category').style.opacity = 0.75;",
 					:minDate => "#{ (@session_date).strftime("%Y-%m-%d") }",
