@@ -125,7 +125,7 @@ BEGIN
 	IF @location_name IS NULL THEN
 		SET @my_participant_id = NULL;
 		@my_participant_id = participant_id(my_encounter_id);
-        @location_name = LEFT(@my_participant_id, 2);
+        SELECT LEFT(@my_participant_id, 2) INTO @location_name FROM encounter LIMIT 1;
 	END IF;
 
 
