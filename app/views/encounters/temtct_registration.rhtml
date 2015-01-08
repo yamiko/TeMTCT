@@ -373,7 +373,7 @@
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
 				:helpText => "Baby ARV adherence - # of weeks taken" } %>
 
-		<%= touch_select_tag "DELIVERY LOCATION", @patient, options_for_select([['', ''], ['Home', 'HOME'], ['Facility', 'FACILITY']]),
+		<%= touch_select_tag "DELIVERY LOCATION", @patient, options_for_select([['', ''], ['Home', 'HOME'], ['Facility', 'FACILITY'], ['Unknown', 'UNKNOWN']]),
 			{	:id => "delivery_location",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
 				:multiple => false,
@@ -385,7 +385,7 @@
 				:field_type => 'number',
 				:helpText => "What was the gestation age(in weeks) at birth?" } %>
 
-		<%= touch_yes_no_tag "CPT GIVEN", @patient, nil,
+		<%= touch_yes_no_unknown_tag "CPT GIVEN", @patient, nil,
 			{	:id => "cpt_given",
 				:tt_onLoad => "__$('keyboard').style.display = 'none'",
 			 	:helpText => "Was CPT given?" } %>

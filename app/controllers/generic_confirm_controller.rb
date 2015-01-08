@@ -515,9 +515,9 @@ class GenericConfirmController < ApplicationController
 		birthday_params = params_to_process.reject{|key,value| key.match(/gender/) }
 		person_params = params_to_process.reject{|key,value| key.match(/birth_|age_estimate|occupation|identifiers/) }
 
-		if person_params["gender"].to_s == "Female"
+		if person_params["gender"].to_s == "F"
       		@gender = 'F'
-		elsif person_params["gender"].to_s == "Male"
+		elsif person_params["gender"].to_s == "M"
       		@gender = 'M'
 		end
    
@@ -582,7 +582,7 @@ class GenericConfirmController < ApplicationController
 			@unmatched_demographics << ['Date of birth', coded_name, saved_obs, @birthdate]
 		end
 
-		if @patient.person.birthdate_estimated == @birthdate_estimated
+		if @patient.person.birthdate_estimated != @birthdate_estimated
 			matched = false
 
 			if @patient.person.birthdate_estimated == 1
@@ -634,9 +634,9 @@ class GenericConfirmController < ApplicationController
 			birthday_params = params_to_process.reject{|key,value| key.match(/gender/) }
 			person_params = params_to_process.reject{|key,value| key.match(/birth_|age_estimate|occupation|identifiers/) }
 
-			if person_params["gender"].to_s == "Female"
+			if person_params["gender"].to_s == "F"
 		  		@gender = 'F'
-			elsif person_params["gender"].to_s == "Male"
+			elsif person_params["gender"].to_s == "M"
 		  		@gender = 'M'
 			end
 	   
@@ -671,9 +671,9 @@ class GenericConfirmController < ApplicationController
 			end
 			
 			person = @patient.person
-			person.birthdate = @birthdate
+			person.birthdate = @birthdate if @birthdate
 			person.birthdate_estimated = @birthdate_estimated
-			person.gender = @gender
+			person.gender = @gender if @gender
 			person.save
 
 			identifier_type_id = PatientIdentifierType.find_by_name('Dummy id').patient_identifier_type_id rescue nil

@@ -170,7 +170,7 @@
 
 			<%= touch_text_field_tag "OTHER (SPECIFY)", @patient, nil,
 				{	:id => "other_fpm",
-					:condition => '$("touchscreenInput2").value.match(/Other/g) != null',
+					:condition => '$("fpm_used").value.match(/Other/g) != null',
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "Please specify the other family planning method" } %>
 
