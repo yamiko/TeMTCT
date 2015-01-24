@@ -150,24 +150,67 @@
 				{	:id => "sample_date",                                               
 					:helpText => "When was the sample taken?" } %>
 
-			<%= touch_select_tag "HIV TEST RESULT", @patient, concept_set_options('HIV TEST RESULT'),
+			<%= touch_select_tag "HIV TEST RESULT", @patient, concept_set_options('TEMTCT HIV TEST RESULT'),
 				{	:id => 'treatment_status',
 					:multiple => false,
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "What was the test result?" } %>
 
-			<%= touch_date_tag "DNA-PCR TESTING RESULT RECEIVED DATE", @patient, nil,                   
-				{	:id => "sample_date",                                               
+			<%= touch_select_tag "DNA-PCR TESTING RESULT RECEIVED", @patient, options_for_select([['', ''], ['Yes', 'YES'], ['Not recorded', 'NOT RECORDED'], ['N/A', 'N/A']]),
+				{	:id => "sample_date_received_present",
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
-					:helpText => "When was the result received?" } %>
+					:multiple => false,
+				 	:helpText => "Date result received present?" } %>
 
+		<!--	<%= touch_date_tag "DNA-PCR TESTING RESULT RECEIVED DATE", @patient, nil,                   
+				{	:id => "sample_date_received",                                               
+				    :condition => '$("sample_date_received_present").value == "YES"',
+					:helpText => "When was the result received?" } %>
+-->
+			<%= touch_calendar_field_tag "DNA-PCR TESTING RESULT RECEIVED DATE", @patient, nil,                   
+				{	:id => "sample_date_received", 
+				    :condition => '$("sample_date_received_present").value == "YES"',
+					:field_type => "calendar",
+					:minDate => "",
+					:maxDate => "",
+					:startweekdate => '',
+					:value => @session_date,
+					:endweekdate => '',
+					:tt_onLoad => "showCategory('Result received date'); __$('category').style.opacity = 0.75;",
+					:ajaxCalendarUrl => "",                                          
+					:helpText => "" } %>
+
+
+			<%= touch_select_tag "DNA-PCR TESTING RESULT GIVEN", @patient, options_for_select([['', ''], ['Yes', 'YES'], ['Unknown', 'UNKNOWN'], ['Not indicated', 'NOT INDICATED']]),
+				{	:id => "sample_date_given_present",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:multiple => false,
+				 	:helpText => "Date result given to caregiver present?" } %>
+<!--
 			<%= touch_date_tag "DNA-PCR TESTING RESULT GIVEN DATE", @patient, nil,                   
-				{	:id => "sample_date",                                               
+				{	:id => "sample_date_given",                                               
+				    :condition => '$("sample_date_given_present").value == "YES"',
 					:helpText => "When was the result given to caregiver?" } %>
+-->
+
+			<%= touch_calendar_field_tag "DNA-PCR TESTING RESULT GIVEN DATE", @patient, nil,                   
+				{	:id => "sample_date_given", 
+				    :condition => '$("sample_date_given_present").value == "YES"',
+					:field_type => "calendar",
+					:minDate => "",
+					:maxDate => "",
+					:startweekdate => '',
+					:value => @session_date,
+					:endweekdate => '',
+					:tt_onLoad => "showCategory('Result given date'); __$('category').style.opacity = 0.75;",
+					:ajaxCalendarUrl => "",                                          
+					:helpText => "" } %>
+
 
 			<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
 				{	:id => "clinical_notes", 
 					:optional => true,
+					:tt_onLoad => 'if($("sample_date_received_present").value != "YES"){$("sample_date_received").value = ""}; if($("sample_date_given_present").value != "YES"){$("sample_date_given").value = ""};',
 					:helpText => "Notes (optional)" } %>
 
 			<%= hidden_field_tag "filter[provider]", nil %>
