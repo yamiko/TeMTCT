@@ -161,7 +161,7 @@
 
 		<%= touch_yes_no_tag "DATE OF DEATH KNOWN", @patient, nil,
 			{	:id => "date_known",
-				:condition => '$("termination_reason").value == "Death of mother"',
+				:condition => '$("termination_reason").value == "Death of mother" || $("termination_reason").value == "Death of child"',
 				:tt_onUnload => 'clearDate()',
 			 	:helpText => "Is the date of death known?" } %>
 
@@ -180,7 +180,7 @@
 
 		<%= touch_yes_no_tag "CAUSE OF DEATH KNOWN", @patient, nil,
 			{	:id => "cause_known",
-				:condition => '$("termination_reason").value == "Death of mother"',
+				:condition => '$("termination_reason").value == "Death of mother" || $("termination_reason").value == "Death of child"',
 			 	:helpText => "Is the cause of death known?" } %>
 
 		<%= touch_text_field_tag "CAUSE OF DEATH", @patient, nil,
@@ -198,6 +198,7 @@
 		<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
 			{	:id => "clinical_notes", 
 				:optional => true,
+				:tt_onLoad => 'if($("date_known").value != "YES"){$("death_date").value = ""};',
 				:helpText => "Notes (optional)" } %>
 
 		<%= hidden_field_tag "filter[provider]", nil %>
