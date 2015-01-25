@@ -42,14 +42,14 @@
 			<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
 			<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
 
-			<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
+		<%= touch_calendar_field_tag "APPOINTMENT DATE", @patient, nil,                   
 				{	:id => "next_appointment_date", 
 					:tt_onLoad => "showCategory('Next appointment'); __$('category').style.opacity = 0.75;",
 					:field_type => "calendar",    
 					:startweekdate => '',
 					:value => @session_date,
 					:endweekdate => '',
-					:ajaxCalendarUrl => "",                                          
+					:ajaxCalendarUrl => "data.txt?date=",                                          
 					:helpText => "" } %>
 
 			<%= touch_yes_no_tag "CURRENTLY USING FAMILY PLANNING METHOD", @patient, nil,
@@ -71,16 +71,40 @@
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "Please specify the other family planning method" } %>
 
-			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
+<!--			<%= touch_yes_no_tag "REFILL FPM", @patient, nil,
 				{	:id => "refill_fpm",
 					:condition => '$("on_fpm").value == "YES"',
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "Refill on family planning method on this visit?" } %>
+	-->
+			<%= touch_select_tag "REFILL FPM", @patient, options_for_select([['', ''], ['Yes', 'YES'], ['No, initiated at this visit', 'NO, INITIATED AT THIS VISIT'], ['No, not on a method', 'NO, NOT ON A METHOD']]),
+				{	:id => "refill_fpm",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:multiple => false,
+				 	:helpText => "Refill on family planning method on this visit?" } %>
 
 			<%= touch_yes_no_tag "PICKED UP DRUG SUPPLY", @patient, nil,
 				{	:id => "picked_up_supply",
 					:tt_onLoad => "__$('keyboard').style.display = 'none'",
 					:helpText => "Did the patient pick up ARV drug supply?" } %>
+
+			<%= touch_text_field_tag "NUMBER OF PILLS", @patient, nil,
+				{	:id => "number_of_pills",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:field_type => 'number',
+					:validationRule => "^[0-9]*$",
+					:validationMessage => "You must enter a decimal between 0 and 9 (for example: 54)",
+					:condition => '$("picked_up_supply").value == "YES"',
+					:helpText => "What was the number of pills picked?" } %>
+
+			<%= touch_text_field_tag "NUMBER OF DAYS", @patient, nil,
+				{	:id => "number_of_days",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:field_type => 'number',
+					:validationRule => "^[0-9]*$",
+					:validationMessage => "You must enter a decimal between 0 and 9 (for example: 54)",
+					:condition => '$("picked_up_supply").value == "YES"',
+					:helpText => "For how many days?" } %>
 
 			<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
 				{	:id => "clinical_notes", 
