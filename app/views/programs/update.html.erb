@@ -245,8 +245,6 @@
 		{	:id => "death_date", 
 			:condition => '$("date_known").value == "YES"',
 			:field_type => "calendar",    
-			:minDate => "#{ (@session_date - 5.months).strftime("%Y-%m-%d") }",
-			:maxDate => "#{ (@session_date + 9.months).strftime("%Y-%m-%d") }",
 			:startweekdate => '',
 			:value => @session_date,
 			:endweekdate => '',

@@ -60,6 +60,7 @@
 							<% if !@patient_is_child_bearing_female %>
 								<option value='/encounters/new/dna_pcr_test?patient_id=<%= @patient.id -%>'>DNA PCR Test</option>
 							<% end %>
+							<option value='/encounters/new/tracing_log?patient_id=<%= @patient.id -%>'>Tracing log</option>
 						<% end %>
 					</select>
 			
