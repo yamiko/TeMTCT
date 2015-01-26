@@ -1,0 +1,239 @@
+<style>
+	.tt_controls_date_of_confirmatory_hiv_test #num { display:none; }
+
+	.tt_controls_date_art_last_taken #num { display:none; }
+
+	.tt_controls_date_of_confirmatory_hiv_test table {  position: absolute; top: -360px; }
+
+	.tt_controls_date_art_last_taken table {  position: absolute; top: -360px; }
+
+	.tt_controls_last_arv_drugs_taken .keyboard { display:none; }
+
+  .tt_controls_cd4_count #qwerty , .tt_controls_cd4_percent #qwerty { 
+    display: none; 
+   }                              
+                                                                                
+  .tt_controls_cd4_count #equals, .tt_controls_cd4_percent #equals { 
+    display: inline; 
+  }                            
+                                                                                
+  .tt_controls_cd4_count #lessthan, .tt_controls_cd4_count #greaterthan {       
+    position: absolute;                                                         
+    right: 65%;                                                                 
+  }                                                                             
+                                                           
+  .tt_controls_cd4_percent #lessthan, .tt_controls_cd4_percent #greaterthan {       
+    position: absolute;                                                         
+    right: 65%;                                                                 
+  }                                                                             
+                     
+  .tt_controls_cd4_count #greaterthan , .tt_controls_cd4_percent #greaterthan{                                         
+    position: absolute;                                                         
+    right: 65%;                                                                 
+    top: 5px;                                                                   
+  }                                                                             
+                                                                                
+  .tt_controls_cd4_count #lessthan , .tt_controls_cd4_percent #lessthan {                                            
+    top: 145px;                                                                 
+  }
+
+  .tt_controls_cd4_count #lessthan, .tt_controls_cd4_count #greaterthan { display:block; float:right }
+  .tt_controls_cd4_percent #lessthan, .tt_controls_cd4_percent #greaterthan { display:block; float:right }
+
+  .tt_controls_initial_weight_kg #qwerty , .tt_controls_initial_height_cm #qwerty { 
+    display: none; 
+   }                              
+                                                                                
+	.tt_controls_confirmatory_hiv_test_year #Unknown { display: inline; }
+
+	.tt_controls_confirmatory_hiv_test_month .keyboard { display:none; }
+
+	#tt_page_confirmatory_hiv_test_month .options {  height: 90%; }
+
+	#tt_page_confirmatory_hiv_test_month .inputFrameClass {  height: 86%; }
+
+	.tt_controls_month_started_art .keyboard { display:none; }
+
+	#tt_page_month_started_art .options {  height: 90%; }
+
+	#tt_page_month_started_art .inputFrameClass {  height: 86%; }
+
+	.tt_controls_year_art_last_taken #Unknown { display: inline; }
+
+	.tt_controls_month_art_last_taken .keyboard { display:none; }
+
+	#tt_page_month_art_last_taken .options {  height: 90%; }
+
+	#tt_page_month_art_last_taken .inputFrameClass {  height: 86%; }
+
+	.tt_controls_year_started_art #Unknown { display: inline; }
+
+</style>
+
+<%= javascript_include_tag "dateformat" %>
+
+<script>
+	var tt_cancel_destination = "/patients/show/<%= @patient.patient_id %>"
+	var patient_age = null;
+
+	function cssText() {
+		element = document.getElementsByClassName("inputFrameClass")[0];
+		element.style.cssText = 'height:280px !important';
+	}
+
+	function clearDate(condition) {
+
+		if($('patient_pregnant').value == 'NO' && condition == 0){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($("patient_hiv").value == 'NO' && condition == 1){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($('plan_to_not_move').value == 'NO' && condition == 2){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($('not_at_other_facility').value == 'NO' && condition == 3){
+			$('estimated_delivery_date').value = '';
+		}
+
+		if($('sign_form').value == 'NO' && condition == 4){
+			$('estimated_delivery_date').value = '';
+		}
+	}	
+
+	function isNumber(n) {
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	}
+
+	function validateDOB() {                                                      
+	setDOB();                                                                   
+	curr_date = new Date();                                                     
+                                                                                
+    if (dateCreate(set_dob) == 'Invalid Date') {                                
+      if (set_dob.split('-')[1] == 'Unknown')                                   
+        return true                                                             
+                                                                                
+      if (curr_date.getFullYear() == parseInt(dob_year)) {                      
+        if ((curr_date.getMonth() + 1) < parseInt(dob_month)){                  
+          if (document.getElementById('tt_page_month_started_art') != null)        
+            return true                                                         
+                                                                                
+          return false                                                          
+        }                                                                       
+      }                                                                         
+                                                                                
+      if (dob_month == 'Unknown'){                                              
+        if (curr_date.getFullYear() == parseInt(dob_year)) {                    
+          if ((curr_date.getMonth() + 1) < parseInt(dob_month))                 
+            return false                                                        
+        }                                                                       
+      }                                                                         
+    }else{                                                                      
+      if (document.getElementById('tt_page_month_started_art') != null)            
+        return true                                                             
+                                                                                
+      if (curr_date < dateCreate(set_dob))                                      
+        return false                                                            
+    }                                                                           
+    return true                                                                 
+  }   
+
+</script>
+
+<form id='appointment' action="/encounters/create" method='post'>
+	<%= hidden_field_tag "encounter[encounter_type_name]", "TRACING LOG" %>
+	<%= hidden_field_tag "encounter[patient_id]", @patient.id %>
+	<%= hidden_field_tag "encounter[encounter_datetime]", DateTime.now() %>
+	<%= hidden_field_tag "encounter[provider_id]", current_user.user_id %>
+
+	<%= touch_select_tag "STUDY ARM", @patient, concept_set_options('STUDY ARM'),
+		{	:id => 'study_arm',
+			:multiple => false,
+			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:helpText => "What was the facility stady arm?" } %>
+
+	<%= touch_calendar_field_tag "DATE APPOINTMENT MISSED", @patient, nil,                   
+		{	:id => "date_appointment_missed", 
+			:field_type => "calendar",
+			:startweekdate => '',
+			:value => @session_date,
+			:endweekdate => '',
+			:tt_onLoad => "showCategory('Date appmt. missed'); __$('category').style.opacity = 0.75;",
+			:ajaxCalendarUrl => "",                                          
+			:helpText => "" } %>
+
+	<%= touch_select_tag "REASON FOR FOLLOWUP", @patient, concept_set_options('REASON FOR FOLLOWUP'),
+		{	:id => 'reason_for_followup',
+			:multiple => false,
+			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:helpText => "What was the reason for followup?" } %>
+
+	<%= touch_calendar_field_tag "DATE TO RETURN", @patient, nil,                   
+		{	:id => "date_to_return", 
+			:field_type => "calendar",
+			:startweekdate => '',
+			:value => @session_date,
+			:endweekdate => '',
+			:tt_onLoad => "showCategory('Date to return'); __$('category').style.opacity = 0.75;",
+			:ajaxCalendarUrl => "",                                          
+			:helpText => "" } %>
+
+	<%= touch_calendar_field_tag "DATE OF MEETING HSA", @patient, nil,                   
+		{	:id => "date_of_meeting", 
+			:field_type => "calendar",
+			:startweekdate => '',
+			:value => @session_date,
+			:endweekdate => '',
+			:tt_onLoad => "showCategory('Date of meeting HSA'); __$('category').style.opacity = 0.75;",
+			:ajaxCalendarUrl => "",                                          
+			:helpText => "" } %>
+
+	<%= touch_yes_no_tag "SMS SENT", @patient, nil,
+		{	:id => "sms_sent",
+		 	:condition => '$("study_arm").value == "MIP + SMS"',
+		 	:helpText => "Was the SMS sent?" } %>
+
+	<%= touch_text_field_tag "NAME OF REQUESTOR", @patient, nil,
+		{	:id => "name_of_requestor",
+			:helpText => "Enter the name of requestor",
+			:tt_onLoad => "__$('keyboard').style.display = 'none';" } %>
+
+	<%= touch_calendar_field_tag "DATE OF HOME VISIT", @patient, nil,                   
+		{	:id => "date_of_home_visit", 
+			:field_type => "calendar",
+			:startweekdate => '',
+			:value => @session_date,
+			:endweekdate => '',
+			:tt_onLoad => "showCategory('Date of home visit'); __$('category').style.opacity = 0.75;",
+			:ajaxCalendarUrl => "",                                          
+			:helpText => "" } %>
+
+	<%= touch_select_tag "OUTCOME CODE", @patient, concept_set_options('OUTCOME CODE'),
+		{	:id => 'outcome_code',
+			:multiple => false,
+			:tt_onLoad => "__$('keyboard').style.display = 'none'",
+			:helpText => "What is the outcome code?" } %>
+
+	<%= touch_calendar_field_tag "DATE CLIENT RETURNED", @patient, nil,                   
+		{	:id => "date_client_returned", 
+			:field_type => "calendar",
+			:startweekdate => '',
+			:value => @session_date,
+			:endweekdate => '',
+			:tt_onLoad => "showCategory('Date client returned'); __$('category').style.opacity = 0.75;",
+			:ajaxCalendarUrl => "",                                          
+			:helpText => "" } %>
+
+	<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
+		{	:id => "clinical_notes", 
+			:optional => true,
+			:helpText => "Notes (optional)" } %>
+
+	<%= hidden_field_tag "filter[provider]", nil %>
+	<%= submit_tag "Finish" %>    
+
+</form>
+
