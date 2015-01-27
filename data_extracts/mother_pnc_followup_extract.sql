@@ -7,6 +7,8 @@ SELECT
 'Other family planning method'                          ,
 'Refill family planning'                         ,
 'Refill ARV drug supply',
+'Number of pills',
+'Number of days',
 'Double data entered',
 'Notes'            
 UNION
@@ -19,11 +21,13 @@ text_for_obs(encounter_id, 374) AS Family_planning_method,
 text_for_obs(encounter_id, 7215) AS Other_family_planning_method,
 text_for_obs(encounter_id, 8397) AS Refill_FPM,
 text_for_obs(encounter_id, 8394) AS Picked_up_drug_supply,
+text_for_obs(encounter_id, 8434) AS Number_of_pills,
+text_for_obs(encounter_id, 8433) AS Number_of_days,
 text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes
  FROM encounter 
 WHERE encounter_type = 116 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) > 5 AND voided = 0 
-INTO OUTFILE '/tmp/mother_pnc_followupter.csv'
+INTO OUTFILE '/tmp/mother_pnc_followup.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n';
