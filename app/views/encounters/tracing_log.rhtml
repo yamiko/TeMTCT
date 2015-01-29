@@ -217,11 +217,18 @@
 			:tt_onLoad => "__$('keyboard').style.display = 'none'",
 			:helpText => "What is the outcome code?" } %>
 
+	<%= touch_yes_no_unknown_tag "DATE PRESENT", @patient, nil,
+				{	:id => "date_present",
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:multiple => false,
+				 	:helpText => "Date result received present?" } %>
+
 	<%= touch_calendar_field_tag "DATE CLIENT RETURNED", @patient, nil,                   
 		{	:id => "date_client_returned", 
 			:field_type => "calendar",
 			:startweekdate => '',
 			:value => @session_date,
+		    :condition => '$("date_present").value == "YES"',
 			:endweekdate => '',
 			:tt_onLoad => "showCategory('Date client returned'); __$('category').style.opacity = 0.75;",
 			:ajaxCalendarUrl => "",                                          
