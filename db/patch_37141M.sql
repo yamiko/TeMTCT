@@ -1,0 +1,1 @@
+UPDATE patient_identifier SET voided = 1, voided_by = 5, date_voided = '2015-02-01', void_reason = 'Has to be re-entered with another estimated age for data entry purposes' WHERE identifier = '37141M';
