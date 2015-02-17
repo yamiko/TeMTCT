@@ -4,6 +4,8 @@ SELECT
 'MR Rekey',
 'IR',
 'IR Rekey',
+'ANC'                          ,
+'ANC Rekey'                      ,
 'M PNC'                          ,
 'M PNC Rekey'                      ,
 'I PNC'                          ,
@@ -21,10 +23,12 @@ totals_for_user(114, user_id, 2),
 totals_rekeyed_by_user(114, user_id, 2),
 totals_for_user(114, user_id, 1),
 totals_rekeyed_by_user(114, user_id, 1),
-totals_for_user(116, user_id, 1),
-totals_rekeyed_by_user(116, user_id, 1),
+totals_for_user(115, user_id, 0),
+totals_rekeyed_by_user(115, user_id, 0),
 totals_for_user(116, user_id, 2),
 totals_rekeyed_by_user(116, user_id, 2),
+totals_for_user(116, user_id, 1),
+totals_rekeyed_by_user(116, user_id, 1),
 totals_for_user(117, user_id, 0),
 totals_rekeyed_by_user(117, user_id, 0),
 totals_for_user(119, user_id, 0),
@@ -36,6 +40,8 @@ WHERE (totals_for_user(114, user_id, 2) +
 totals_rekeyed_by_user(114, user_id, 2) +
 totals_for_user(114, user_id, 1) +
 totals_rekeyed_by_user(114, user_id, 1) +
+totals_for_user(115, user_id, 0) +
+totals_rekeyed_by_user(115, user_id, 0) +
 totals_for_user(116, user_id, 1) +
 totals_rekeyed_by_user(116, user_id, 1) +
 totals_for_user(116, user_id, 2) +
