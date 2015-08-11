@@ -137,7 +137,7 @@ class PeopleController < GenericPeopleController
 			p_id = study_id[2, 3].to_i rescue 0
 			p_type = study_id[5, 1] rescue ''
 
-			if study_site >= 10 && study_site <=39 && p_id >= 101 && p_id <= 178 && (p_type == 'M' || p_type == 'C' || p_type == 'T') && study_id.length == 6
+			if study_site >= 10 && study_site <=39 && p_id >= 101 && p_id <= 180 && (p_type == 'M' || p_type == 'C' || p_type == 'T') && study_id.length == 6
 				valid_id = true
 			end 
 		
