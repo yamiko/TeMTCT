@@ -833,7 +833,7 @@ class PatientsController < GenericPatientsController
 
   def is_child_bearing_female(patient)
   	patient_bean = PatientService.get_patient(patient.person)
-    (patient_bean.sex == 'Female' && patient_bean.age >= 9 && patient_bean.age <= 45) ? true : false
+    (patient_bean.sex == 'Female' && patient_bean.age >= 9 && patient_bean.age <= 55) ? true : false
   end
 
   def programs_dashboard
