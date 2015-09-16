@@ -106,6 +106,19 @@
 					:condition => '$("picked_up_supply").value == "YES"',
 					:helpText => "For how many days?" } %>
 
+			<%= touch_select_tag "ARV REGIMEN TYPE", @patient, options_for_select(@arv_drugs),
+				{	:id => "arvs_supplied",
+					:multiple => false,
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+				 	:condition => '$("picked_up_supply").value == "YES"',
+				 	:helpText => "What were the ARV drugs that were taken?" } %>
+
+			<%= touch_text_field_tag "OTHER REGIMEN (SPECIFY)", @patient, nil,
+				{	:id => "other_regimen",
+					:condition => '$("arvs_supplied").value == "Other"',
+					:tt_onLoad => "__$('keyboard').style.display = 'none'",
+					:helpText => "Please specify the regimen" } %>
+
 			<%= touch_text_area_tag "CLINICAL NOTES CONSTRUCT", @patient, nil,
 				{	:id => "clinical_notes", 
 					:optional => true,
