@@ -8,7 +8,8 @@ SELECT
 'Date of death'                          ,
 'Cause of death known'                         ,
 'Cause of death'                         ,
-'Notes'            
+'Notes',
+'Entered by'            
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
@@ -20,8 +21,9 @@ text_for_obs(encounter_id, 8427) AS DOD_known,
 text_for_obs(encounter_id, 1815) AS DOD,
 text_for_obs(encounter_id, 8426) AS COD_known,
 text_for_obs(encounter_id, 5002) AS COD,
-text_for_obs(encounter_id, 2688) AS Notes
- FROM encounter 
+text_for_obs(encounter_id, 2688) AS Notes,
+text_for_creator(creator) AS entered_by
+FROM encounter 
 WHERE encounter_type = 118 AND voided = 0 
 INTO OUTFILE '/tmp/exit_from_program.csv'
 FIELDS TERMINATED BY ','

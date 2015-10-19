@@ -12,7 +12,8 @@ SELECT
 'Date of home visit'                          ,
 'Outcome code'                          ,
 'Date client returned'                          ,
-'Notes'            
+'Notes',
+'Entered by'            
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
@@ -28,7 +29,8 @@ text_for_obs(encounter_id, 8454) AS Name_of_requestor,
 text_for_obs(encounter_id, 8455) AS Date_of_home_visit,
 text_for_obs(encounter_id, 8456) AS Outcome_code,
 text_for_obs(encounter_id, 8462) AS Date_client_returned,
-text_for_obs(encounter_id, 2688) AS Notes
+text_for_obs(encounter_id, 2688) AS Notes,
+text_for_creator(creator) AS entered_by
  FROM encounter 
 WHERE encounter_type = 119 AND voided = 0 
 INTO OUTFILE '/tmp/tracing_log.csv'

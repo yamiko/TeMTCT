@@ -147,6 +147,19 @@ BEGIN
 END */;;
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS `text_for_creator`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `text_for_creator`(my_creator_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @creator = NULL;
+
+	SELECT u.username INTO @creator FROM users u 
+		WHERE u.user_id = my_creator_id
+			AND u.retired = 0 LIMIT 1;
+
+	RETURN @creator;
+END */;;
+DELIMITER ;
 
 
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;

@@ -12,7 +12,8 @@ SELECT
 'Treatment_regimen', 
 'Other_treatment_regimen',
 'Double data entered',
-'Notes'            
+'Notes',
+'Entered by'            
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
@@ -28,7 +29,8 @@ text_for_obs(encounter_id, 8394) AS Refill_ARVs,
 text_for_obs(encounter_id, 6882) AS Treatment_regimen,
 text_for_obs(encounter_id, 7215) AS Other_treatment_regimen,
 text_for_obs(encounter_id, 8411) AS Double_data_entered,
-text_for_obs(encounter_id, 2688) AS Notes
+text_for_obs(encounter_id, 2688) AS Notes,
+text_for_creator(creator) AS entered_by
  FROM encounter 
 WHERE encounter_type = 116 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) < 5 AND voided = 0 
 INTO OUTFILE '/tmp/infant_pnc_followup.csv'
