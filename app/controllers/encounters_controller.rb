@@ -73,14 +73,42 @@ class EncountersController < GenericEncountersController
 		if (params[:encounter_type].upcase rescue '') == 'HIV_STAGING' and  (CoreService.get_global_property_value('use.extended.staging.questions').to_s == "true" rescue false)
 			render :template => 'encounters/extended_hiv_staging'
 		else
-      if params[:encounter_type].upcase == "INFLUENZA"
-        render :layout => "multi_touch", :action => params[:encounter_type]
-      else
-        render :action => params[:encounter_type] if params[:encounter_type]
-      end
+			if params[:encounter_type].upcase == "INFLUENZA"
+				render :layout => "multi_touch", :action => params[:encounter_type]
+			else
+				entered_already = false
+				encounter_type = 0
+				
+				if (params[:encounter_type].upcase rescue '') == 'ANC_FOLLOWUP'
+					encounter_type = 115	
+				elsif (params[:encounter_type].upcase rescue '') == 'DNA_PCR_TEST'
+					encounter_type = 117	
+				elsif (params[:encounter_type].upcase rescue '') == 'PNC_FOLLOWUP'
+					encounter_type = 116	
+				elsif (params[:encounter_type].upcase rescue '') == 'TEMTCT_REGISTRATION'
+					encounter_type = 114	
+				elsif (params[:encounter_type].upcase rescue '') == 'TRACING_LOG'
+					encounter_type = 119	
+				end
+				
+				todays_encounter = Encounter.find(:all, :conditions => ['patient_id = ? AND DATE(encounter_datetime) = ? AND voided = 0 AND encounter_type = ?', @patient.id, @session_date, encounter_type])
+
+				#raise 
+				#raise todays_encounter.to_yaml
+
+				if todays_encounter.size > 0
+					entered_already = true
+				end
+			
+				if entered_already
+					flash[:error] = "Encounter already entered"
+					redirect_to '/patients/show/' + @patient.id.to_s  and return
+				else
+					render :action => params[:encounter_type] if params[:encounter_type]
+				end
+			end
 			 	
 		end
-
 	end
 
 	def select_options
