@@ -161,6 +161,38 @@ BEGIN
 END */;;
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS `reserve_duplicates`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `reserve_duplicates`(my_encounter_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @done = "Done";
+
+	SET @new_id = my_encounter_id - 1;
+	SET @void_reason = CONCAT("Temporary ", my_encounter_id);
+
+	UPDATE obs SET encounter_id = @new_id, void_reason = @void_reason 
+		WHERE encounter_id = my_encounter_id AND voided = 1;
+
+	RETURN "Done";
+END */;;
+DELIMITER ;
+
+DROP FUNCTION IF EXISTS `restore_observations`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `restore_observations`(my_encounter_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @done = "Done";
+
+	SET @new_id = my_encounter_id - 1;
+	SET @void_reason = CONCAT("Temporary ", my_encounter_id);
+	SET @new_reason = NULL;
+
+	UPDATE obs SET encounter_id = my_encounter_id, void_reason = @new_reason 
+		WHERE encounter_id = @new_id AND voided = 1 AND void_reason  = @void_reason;
+
+	RETURN "Done";
+END */;;
+DELIMITER ;
 
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
