@@ -477,7 +477,7 @@ get_data: LOOP
         INTO v_encounter_id, v_creator, v_encounter_datetime, v_date_created, v_location_id 
         FROM encounter 
         WHERE encounter_type = 116 AND patient_id = rp_patient_id 
-            AND DATE(encounter_datetime) = DATE(rp_encounter_date) LIMIT 1;
+            AND DATE(encounter_datetime) = DATE(rp_encounter_date) AND voided = 0 LIMIT 1;
 
     IF v_encounter_id IS NULL THEN
         SET update_stat = "done";
