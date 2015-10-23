@@ -453,7 +453,7 @@ DECLARE v_encounter_id, v_creator, v_location_id INTEGER DEFAULT NULL;
 
 -- declare cursor for backfill data
 DEClARE update_cursor CURSOR FOR
-	SELECT patient_identifier, encounter_date, regimen, notes, patient_id FROM regimens_patch;
+	SELECT patient_identifier, encounter_date, regimen, notes, patient_id FROM regimens_patch WHERE regimen IS NOT NULL;
  
 -- declare NOT FOUND handler
 DECLARE CONTINUE HANDLER
