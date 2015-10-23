@@ -9,7 +9,8 @@ SELECT
 'Date results given',
 'Double data entered',
 'Notes',
-'Entered by'                          
+'Entered by',
+'Double entered by'
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
@@ -22,7 +23,8 @@ text_for_obs(encounter_id, 8431) AS Result_given,
 text_for_obs(encounter_id, 8059) AS Result_given_date,
 text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes,
-text_for_creator(creator) AS entered_by
+text_for_creator(creator) AS entered_by,
+text_for_double_enterer(encounter_id) AS Double_entered_by
 FROM encounter 
 WHERE encounter_type = 117 AND voided = 0 
 INTO OUTFILE '/tmp/infant_dna_pcr_test.csv'

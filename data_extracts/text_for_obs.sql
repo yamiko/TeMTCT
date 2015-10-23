@@ -161,6 +161,30 @@ BEGIN
 END */;;
 DELIMITER ;
 
+DROP FUNCTION IF EXISTS `text_for_double_enterer`;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `text_for_double_enterer`(my_encounter_id INT) RETURNS VARCHAR(255)
+BEGIN
+	SET @creator = NULL;
+	SET @creator_id = NULL;
+	SET @obs_id = NULL;
+
+	SELECT creator INTO @creator_id FROM obs o 
+		WHERE o.concept_id = 8411 AND text_for_obs(my_encounter_id, 8411) = 'Yes' AND encounter_id = my_encounter_id AND voided = 0 LIMIT 1;
+
+	IF @creator_id IS NULL THEN
+		SET @creator = NULL;
+	ELSE
+		SELECT u.username INTO @creator FROM users u 
+			WHERE u.user_id = @creator_id
+				AND u.retired = 0 LIMIT 1;
+	END IF;
+
+	RETURN @creator;
+END */;;
+DELIMITER ;
+
+
 DROP FUNCTION IF EXISTS `reserve_duplicates`;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50020 */ /*!50003 FUNCTION `reserve_duplicates`(my_encounter_id INT) RETURNS VARCHAR(255)

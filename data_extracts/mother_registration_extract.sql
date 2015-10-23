@@ -24,7 +24,8 @@ SELECT
 'Date treatment initiation prior to enrolment',
 'Double data entered',
 'Notes',
-'Entered by'            
+'Entered by',
+'Double entered by'
 UNION
 SELECT 
 text_for_obs(encounter_id, 8388) AS Patient_signed_informed_consent_form,
@@ -52,7 +53,8 @@ text_for_obs(encounter_id, 7754) AS On_ART_prior_to_enrolment,
 text_for_obs(encounter_id, 2516) AS Date_of_treatment_initiation_prior_to_enrolment,
 text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes,
-text_for_creator(creator) AS entered_by
+text_for_creator(creator) AS entered_by,
+text_for_double_enterer(encounter_id) AS Double_entered_by
 	FROM encounter 
 		WHERE encounter_type = 114 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) > 5 
 			AND voided = 0 

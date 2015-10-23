@@ -9,7 +9,8 @@ SELECT
 'Cause of death known'                         ,
 'Cause of death'                         ,
 'Notes',
-'Entered by'            
+'Entered by',
+'Double entered by'
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
@@ -22,7 +23,8 @@ text_for_obs(encounter_id, 1815) AS DOD,
 text_for_obs(encounter_id, 8426) AS COD_known,
 text_for_obs(encounter_id, 5002) AS COD,
 text_for_obs(encounter_id, 2688) AS Notes,
-text_for_creator(creator) AS entered_by
+text_for_creator(creator) AS entered_by,
+text_for_double_enterer(encounter_id) AS Double_entered_by
 FROM encounter 
 WHERE encounter_type = 118 AND voided = 0 
 INTO OUTFILE '/tmp/exit_from_program.csv'

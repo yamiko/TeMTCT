@@ -12,7 +12,8 @@ SELECT
 'ART Regimen',
 'Double data entered',
 'Notes',
-'Entered by'            
+'Entered by',
+'Double entered by'
 UNION
 SELECT 
 location_for_obs(encounter_id, 7759) AS Facility_code,
@@ -28,7 +29,8 @@ text_for_obs(encounter_id, 8433) AS Number_of_days,
 text_for_obs(encounter_id, 6882) AS ART_regimen,
 text_for_obs(encounter_id, 8411) AS Double_data_entered,
 text_for_obs(encounter_id, 2688) AS Notes,
-text_for_creator(creator) AS entered_by
+text_for_creator(creator) AS entered_by,
+text_for_double_enterer(encounter_id) AS Double_entered_by
  FROM encounter 
 WHERE encounter_type = 116 AND (DATEDIFF(encounter_datetime, dob(patient_id))/365) > 5 AND voided = 0 
 INTO OUTFILE '/tmp/mother_pnc_followup.csv'
