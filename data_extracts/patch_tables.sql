@@ -481,7 +481,7 @@ get_data: LOOP
 
     IF v_encounter_id IS NULL THEN
         SET update_stat = "done";
-        INSERT INTO regimens_fail (patient_identifier, encounter_date, regimen, notes, patient_id) VALUES(rp_identifier, rp_encounter_date, rp_regimen, rp_notes, rp_patient_id);
+        INSERT INTO regimens_fail (patient_identifier, encounter_date, regimen, notes, patient_id) VALUES(rp_identifier, rp_encounter_date, "NOT DONE", rp_notes, rp_patient_id);
         -- Update records
     ELSE
          -- SET update_stat = CONCAT(v_encounter_id, CONCAT(v_creator, CONCAT(v_encounter_datetime, v_date_created)));
@@ -489,7 +489,16 @@ get_data: LOOP
 
         INSERT INTO obs (encounter_id, obs_datetime, person_id, concept_id, value_text, creator, date_created, voided, location_id, uuid) 
            VALUES(v_encounter_id, v_encounter_datetime, rp_patient_id, 6882, rp_regimen, v_creator, v_date_created, 0, v_location_id, (SELECT UUID()));
+
+		SET @temp_obs = NULL;
+		SELECT obs_id INTO @temp_obs FROM obs WHERE concept_id = 6882 AND person_id = rp_patient_id AND obs_datetime = rp_encounter_date LIMIT 1;
+
+        INSERT INTO regimens_fail (patient_identifier, encounter_date, regimen, notes, patient_id) VALUES(rp_identifier, 
+rp_encounter_date, CONCAT(CONCAT(rp_regimen, " "), @temp_obs), rp_notes, rp_patient_id);
+
     END IF;
+	
+	SET v_finished = 0;
 
 END LOOP get_data;
  
