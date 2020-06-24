@@ -21,6 +21,7 @@ class PeopleController < GenericPeopleController
     render :layout => false
   end
 
+  # Create method
   def create
    
     hiv_session = false
